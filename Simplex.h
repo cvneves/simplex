@@ -1,8 +1,10 @@
 #ifndef SIMPLEX_H
 #define SIMPLEX_H
 
+#include <iostream>
 #include <vector>
 #include <algorithm>
+#include <limits>
 
 class Simplex
 {
@@ -15,6 +17,7 @@ class Simplex
 
     int FindPivotColumn();
     int FindPivotRow();
+    void Pivoting(std::vector<double>& row, int i, int pivot_row, int pivot_column);
 };
 
 #endif
