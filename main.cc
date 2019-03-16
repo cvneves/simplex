@@ -11,17 +11,16 @@ int main()
     a.A = {{3, 2, 1, 1, 0}, {2, 5, 3, 0, 1}};
     a.b = {10, 15};
 
+    a.Solve();
 
-    int i = a.FindPivotRow();
+    /*int i = a.FindPivotRow();
     int j = a.FindPivotColumn();
-
     a.Pivoting(a.A[0], i, j);
-
-    a.Pivoting(a.c, i, j);
+    a.Pivoting(a.c, i, j); */
 
     std::cout << a.ToString();
 
-    for(int ci = 0; ci < a.c.size(); ci++)
+    for (int ci = 0; ci < a.c.size(); ci++)
     {
         std::cout << a.c[ci] << " ";
     }

@@ -21,6 +21,8 @@ class Simplex
     int FindPivotRow();
     void Pivoting(std::vector<double>& row, int pivot_row, int pivot_column);
     void ObjFunctionPivoting();
+
+    void Solve();
     
     std::string ToString();
 

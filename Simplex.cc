@@ -66,9 +66,23 @@ void Simplex::Pivoting(std::vector<double>& row, int pivot_row, int pivot_column
     row[pivot_column] = 0;
 }
 
-void Simplex::ObjFunctionPivoting()
+void Simplex::Solve()
 {
-    
+    is_optimal = false;
+    while(is_optimal == false)
+    {
+        int j = FindPivotColumn();
+        int i = FindPivotRow();
+        
+        for(int m = 0; m < n_restrictions; m++)
+        {
+            if(m == i) 
+                continue;
+            Pivoting(A[m], i, j);
+        }
+
+        Pivoting(c, i, j);
+    }
 }
 
 #endif
