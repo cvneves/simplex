@@ -5,6 +5,8 @@
 #include <vector>
 #include <algorithm>
 #include <limits>
+#include <string>
+#include <sstream>
 
 class Simplex
 {
@@ -17,7 +19,11 @@ class Simplex
 
     int FindPivotColumn();
     int FindPivotRow();
-    void Pivoting(std::vector<double>& row, int i, int pivot_row, int pivot_column);
+    void Pivoting(std::vector<double>& row, int pivot_row, int pivot_column);
+    void ObjFunctionPivoting();
+    
+    std::string ToString();
+
 };
 
 #endif
