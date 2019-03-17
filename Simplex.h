@@ -10,7 +10,24 @@
 
 class Simplex
 {
+public:
+  std::vector<std::vector<double>> tableau;
+  std::vector<int> B;
 
+  int n_variables, n_restrictions;
+
+  bool is_optimal, is_infeasible;
+
+  double objective_value;
+
+  void Solve();
+  int FindPivotColumn();
+  int FindPivotRow(int j);
+  bool CheckOptimality();
+  void Pivot(int r, int i, int j);
+  bool CheckInfeasibility();
+
+  std::string ToString();
 
 };
 
