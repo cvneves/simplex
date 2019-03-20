@@ -5,7 +5,7 @@
 
 int Simplex::FindPivotColumn()
 {
-    int j = max_element(tableau[0].begin() + 1, tableau[0].end()) - tableau[0].begin();
+    int j = min_element(tableau[0].begin() + 1, tableau[0].end()) - tableau[0].begin();
     return j;
 }
 
@@ -14,12 +14,17 @@ int Simplex::FindPivotRow(int j)
     std::vector<double> v;
     for (int i = 1; i < tableau.size(); i++)
     {
+        if (tableau[i][j] <= 0)
+        {
+            v.push_back(std::numeric_limits<double>::max());
+            continue;
+        }
         v.push_back(tableau[i][tableau[0].size() - 1] / tableau[i][j]);
     }
 
     int i = min_element(v.begin(), v.end()) - v.begin() + 1;
     return i;
-}   
+}
 
 void Simplex::Pivot(int r, int i, int j)
 {
@@ -33,7 +38,7 @@ void Simplex::Pivot(int r, int i, int j)
 
 bool Simplex::CheckOptimality()
 {
-    if (*max_element(tableau[0].begin() + 1, tableau[0].end() - 1) <= 0)
+    if (*min_element(tableau[0].begin() + 1, tableau[0].end() - 1) >= 0)
         return true;
     return false;
 }
