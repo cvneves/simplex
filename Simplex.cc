@@ -61,6 +61,9 @@ void Simplex::Solve()
         int j = FindPivotColumn();
         int i = FindPivotRow(j);
 
+        basic_variables[i-1] = j - 1;
+        //basic_variables.push_back(j - 1);
+
         for (int m = 0; m < tableau.size(); m++)
         {
             if (m == i)
@@ -70,7 +73,18 @@ void Simplex::Solve()
         }
     }
 
-    objective_value = -*tableau[0].end() / *tableau[0].begin();
+    objective_value = tableau[0][tableau[0].size() - 1] / *tableau[0].begin();
+
+    solution = std::vector<double>(tableau[0].size() - 2, 0);
+
+    {
+        int count = 0;
+        for (int i : basic_variables)
+        {
+            solution[i] = tableau[count+1][tableau[0].size()-1] / tableau[count+1][i+1];
+            count++;
+        }
+    }
 }
 
 std::string Simplex::ToString()
@@ -84,6 +98,12 @@ std::string Simplex::ToString()
         }
         str += "\n";
     }
+    str += "\n\n";
+    for (int i = 0; i < solution.size(); i++)
+    {
+        str += std::to_string(solution[i]) + " ";
+    }
+    str += "\n";
     return str;
 }
 

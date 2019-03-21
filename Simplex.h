@@ -14,6 +14,9 @@ public:
   std::vector<std::vector<double>> tableau;
   std::vector<int> B;
 
+  std::vector<int> basic_variables;
+  std::vector<double> solution;
+
   int n_variables, n_restrictions;
 
   bool is_optimal, is_infeasible;
