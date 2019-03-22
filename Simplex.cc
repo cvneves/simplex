@@ -71,6 +71,7 @@ void Simplex::Solve()
 
             Pivot(m, i, j);
         }
+
     }
 
     objective_value = tableau[0][tableau[0].size() - 1] / *tableau[0].begin();
