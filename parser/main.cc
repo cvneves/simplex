@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <map>
 
 int main()
 {
@@ -9,7 +10,7 @@ int main()
     f.open("p1.mps");
     std::string line;
 
-    while (std::getline(f, line) && line.find("ROWS") == std::string::npos)
+   /* while (std::getline(f, line) && line.find("ROWS") == std::string::npos)
     {
         //
     }
@@ -39,6 +40,6 @@ int main()
             restriction_type.push_back(line[1]);
         }
         n_restrictions++;
-    }
+    } */
 
 }
