@@ -1,4 +1,4 @@
-f = open("p1.mps", "r")
+f = open("p2test.mps", "r")
 
 M = 1000000
 restrictions = {}
