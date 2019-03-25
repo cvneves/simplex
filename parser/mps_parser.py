@@ -48,21 +48,12 @@ std_variables = variables
 std_restrictions = restrictions
 std_rhs = rhs
 
-for row in std_restrictions.items():
-    if row[1] == 'N':
-        continue
-    elif row[1] == 'L':
-        variables["SLACK_" + row[0]] = ({row[0]: 1.0}, {})
-    elif row[1] == 'G':
-        variables["SURPLUS_" + row[0]] = ({row[0]: -1.0}, {})
-        variables["ARTIF_" + row[0]] = ({row[0]: 1, obj_func_name: M}, {})
-    elif row[1] == 'E':
-        variables["ARTIF_" + row[0]] = ({row[0]: 1, obj_func_name: M}, {})
 
 for var in std_variables.items():
     if var[1][1] == {}:
         continue
-    elif 'FR' in var[1][1]:
+
+    elif 'FR' in var[1][1] or 'UP' in var[1][1] or 'LO' in var[1][1]:
         std_variables[var[0]+"+"] = (std_variables[var[0]][0].copy(), std_variables[var[0]][1].copy()) 
         std_variables[var[0]+"+"][1].clear()
         std_variables[var[0]+"-"] = (std_variables[var[0]][0].copy(), std_variables[var[0]][1].copy()) 
@@ -72,7 +63,36 @@ for var in std_variables.items():
             std_variables[var[0]+"-"][0][i[0]] = -i[1]         
             del i
 
+        if 'UP' in var[1][1]:
+            std_restrictions[var[0]+"_UP_BOUND"] = 'L'
+            std_variables[var[0]+"+"][0][var[0]+"_UP_BOUND"] = 1
+        if 'LO' in var[1][1]:
+            std_restrictions[var[0]+"_LO_BOUND"] = 'G'
+            std_variables[var[0]+"-"][0][var[0]+"_LO_BOUND"] = -1
+
         del std_variables[var[0]]
+    
+    if 'FX' in var[1][1]:
+        if var[1][1]['FX'] >= 0:
+            std_restrictions[var[0]+"_FX_BOUND"] = 'E'
+            var[1][0][var[0]+"_FX_BOUND"] = 1
+
+        elif var[1][1]['FX'] < 0:
+            std_restrictions[var[0]+"_FX_BOUND"] = 'E'
+            var[1][0][var[0]+"_FX_BOUND"] = -1
+        
+
+for row in std_restrictions.items():
+    if row[1] == 'N':
+        continue
+    elif row[1] == 'L':
+        std_variables["SLACK_" + row[0]] = ({row[0]: 1.0}, {})
+    elif row[1] == 'G':
+        std_variables["SURPLUS_" + row[0]] = ({row[0]: -1.0}, {})
+        std_variables["ARTIF_" + row[0]] = ({row[0]: 1, obj_func_name: M}, {})
+    elif row[1] == 'E':
+        std_variables["ARTIF_" + row[0]] = ({row[0]: 1, obj_func_name: M}, {})    
+    
     
 '''
 UP LO FX FR
@@ -83,49 +103,36 @@ UP LO FX FR
 
 '''
 
-
-
-for v in std_variables.items():
-    print(v)
 #print(rhs)
 
 # tableau creation
 
-tableau = []
+
+
+n_variables = len(std_variables.items())
+n_restrictions = len(std_restrictions.items())
+
+tableau = [[0 for x in range(n_variables)] for y in range(n_restrictions)]
+
 i = 0
 j = 0
-n_artificial_vars = 0
-n_slack_vars = 0
-N = 0
-for row in restrictions.items():
-    tableau.append([])
 
-    for column in variables.items():
-        if row[0] in column[1]:
-            if row[1] == 'G':
-                k = -1
-            elif row[1] == 'N':
-                N = i
-                k = -1
-            elif row[1] == 'L':
-                k = 1
-            elif row[1] == 'E':
-                k = 1
-            tableau[i].append(k * column[1][row[0]])
-        else:
-            tableau[i].append(0)
-
-    tableau[N], tableau[0] = tableau[0], tableau[N]
-
-    i += 1
-
-tableau[0].insert(0, 1)
-for row in tableau[1:]:
-    row.insert(0, 0)
-
-for row in restrictions.items():
+for v in std_variables.items():
     pass
+    print(v)
 
+
+for row in std_restrictions.items():
+    j = 0
+    for column in std_variables.items():
+        if row[0] in column[1][0]:
+            tableau[i][j] = column[1][0][row[0]]
+        j += 1
+    i += 1
+            
+
+for row in tableau:
+    print(row)
 
 # for row in tableau:
 #    print(row)
