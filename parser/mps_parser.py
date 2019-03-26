@@ -1,4 +1,4 @@
-f = open("p2test.mps", "r")
+f = open("p1.mps", "r")
 
 M = 1000000
 restrictions = {}
@@ -65,10 +65,13 @@ for var in std_variables.items():
 
         if 'UP' in var[1][1]:
             std_restrictions[var[0]+"_UP_BOUND"] = 'L'
+            std_rhs[std_rhs.items()[0][0]][var[0]+"_UP_BOUND"] = var[1][1]['UP']
             std_variables[var[0]+"+"][0][var[0]+"_UP_BOUND"] = 1
         if 'LO' in var[1][1]:
             std_restrictions[var[0]+"_LO_BOUND"] = 'G'
             std_variables[var[0]+"-"][0][var[0]+"_LO_BOUND"] = -1
+            std_rhs[std_rhs.items()[0][0]][var[0]+"_LO_BOUND"] = var[1][1]['LO']
+
 
         del std_variables[var[0]]
     
@@ -117,9 +120,7 @@ tableau = [[0 for x in range(n_variables)] for y in range(n_restrictions)]
 i = 0
 j = 0
 
-for v in std_variables.items():
-    pass
-    print(v)
+
 
 
 for row in std_restrictions.items():
@@ -128,13 +129,20 @@ for row in std_restrictions.items():
         if row[0] in column[1][0]:
             tableau[i][j] = column[1][0][row[0]]
         j += 1
+    if obj_func_name in row:
+        tableau[i].append(0)
+        tableau[i].insert(0,1)
+        tableau[0], tableau[i] = tableau[i], tableau[0]
+    else:
+        pass
+        tableau[i].append(std_rhs[std_rhs.items()[0][0]][row[0]])
+        tableau[i].insert(0,0)
     i += 1
-            
+
+
+               
 
 for row in tableau:
     print(row)
-
-# for row in tableau:
-#    print(row)
 
 f.close()
