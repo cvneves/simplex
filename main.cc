@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include <fstream>
 #include "Simplex.h"
 
 int main()
@@ -7,16 +7,48 @@ int main()
     /*https://jaredantrobus.com/squirrel/2015/Summer/MA162/4.1.php*/
     /*http://simplex.tode.cz/en/#steps*/
 
+    std::ifstream f;
+    f.open("p11_converted.mps");
+    std::string line;
+
+    int i = 0;
+    int j = 0;
+    std::vector<std::vector<double>> t;
+    std::vector<int> basic_vars;
+    while (std::getline(f, line))
+    {
+
+        int n_columns, n_rows;
+        switch (i)
+        {
+        case 0:
+            n_rows = std::stoi(line);
+            break;
+        case 1:
+            n_columns = std::stoi(line);
+            t = std::vector<std::vector<double>>(n_rows, std::vector<double>(n_columns));
+            break;
+        }
+
+        if (i >= 2 && i <= (n_rows * n_columns + 1))
+        {
+            t[(i - 2) / n_columns][j] = std::stof(line);
+            j++;
+            if (j == n_columns)
+                j = 0;
+        }
+
+        if (i > (n_rows * n_columns + 2))
+        {
+            basic_vars.push_back(std::stoi(line));
+        }
+
+        i++;
+    }
+    std::cout << "\n";
     Simplex a;
-    double M = 10000;
-    //a.tableau = {{1, 2, 3, 4, 0, 0, 0}, {0, 3, 2, 1, 1, 0, 10}, {0, 2, 5, 3, 0, 1, 15}};
-    a.tableau = {{1, 1000000, 0, 1000000, -1.0, 0, -9.0, -4.0, 0}, {0, 0, 0, 1, 0, 0, 1.0, -1.0, 7.0}, {0, 1, 0, 0, 1.0, -1.0, 1.0, 0, 10.0}, {0, 0, 1.0, 0, 1.0, 0, 0, 1.0, 5.0}};
-    a.basic_variables = {0,1,2};
-std::cout << a.ToString();
+    a.tableau = t;
+    a.basic_variables = basic_vars;
     a.Solve();
-    std::cout << a.objective_value << "\n";
-    std::cout << a.ToString(); 
-
-    
-
+    std::cout << a.ToString();
 }
