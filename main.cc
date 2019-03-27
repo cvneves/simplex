@@ -13,42 +13,51 @@ int main()
 
     int i = 0;
     int j = 0;
+    int n_columns, n_rows;
     std::vector<std::vector<double>> t;
     std::vector<int> basic_vars;
-    while (std::getline(f, line))
+
+    if (f.is_open())
     {
-
-        int n_columns, n_rows;
-        switch (i)
+        while (std::getline(f, line))
         {
-        case 0:
-            n_rows = std::stoi(line);
-            break;
-        case 1:
-            n_columns = std::stoi(line);
-            t = std::vector<std::vector<double>>(n_rows, std::vector<double>(n_columns));
-            break;
+
+            switch (i)
+            {
+            case 0:
+                n_rows = std::stoi(line);
+                break;
+            case 1:
+                n_columns = std::stoi(line);
+                t = std::vector<std::vector<double>>(n_rows, std::vector<double>(n_columns));
+                break;
+            }
+
+            if (i >= 2 && i <= (n_rows * n_columns + 1))
+            {
+                t[(i - 2) / n_columns][j] = std::stof(line);
+                j++;
+                if (j == n_columns)
+                    j = 0;
+            }
+
+            if (i > (n_rows * n_columns + 2))
+            {
+                basic_vars.push_back(std::stoi(line));
+            }
+
+            i++;
         }
 
-        if (i >= 2 && i <= (n_rows * n_columns + 1))
-        {
-            t[(i - 2) / n_columns][j] = std::stof(line);
-            j++;
-            if (j == n_columns)
-                j = 0;
-        }
+        f.close();
 
-        if (i > (n_rows * n_columns + 2))
-        {
-            basic_vars.push_back(std::stoi(line));
-        }
+        Simplex a;
 
-        i++;
+        a.tableau = t;
+        a.basic_variables = basic_vars;
+        a.Solve();
+        std::cout << a.ToString();
     }
-    std::cout << "\n";
-    Simplex a;
-    a.tableau = t;
-    a.basic_variables = basic_vars;
-    a.Solve();
-    std::cout << a.ToString();
+    else
+        std::cout << "ERRO";
 }
