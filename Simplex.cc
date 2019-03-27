@@ -61,8 +61,7 @@ void Simplex::Solve()
         int j = FindPivotColumn();
         int i = FindPivotRow(j);
 
-        basic_variables[i-1] = j - 1;
- 
+        basic_variables[i - 1] = j - 1;
 
         for (int m = 0; m < tableau.size(); m++)
         {
@@ -71,7 +70,6 @@ void Simplex::Solve()
 
             Pivot(m, i, j);
         }
-
     }
 
     objective_value = tableau[0][tableau[0].size() - 1] / *tableau[0].begin();
@@ -82,8 +80,7 @@ void Simplex::Solve()
         int count = 0;
         for (int i : basic_variables)
         {
-            solution[i]
-            //solution[i] = tableau[count+1][tableau[0].size()-1] / tableau[count+1][i+1];
+            solution[i] = tableau[count + 1][tableau[0].size() - 1] / tableau[count + 1][i + 1];
             count++;
         }
     }

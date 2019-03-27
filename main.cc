@@ -2,62 +2,54 @@
 #include <fstream>
 #include "Simplex.h"
 
-int main()
+int main(int argc, char* argv[])
 {
     /*https://jaredantrobus.com/squirrel/2015/Summer/MA162/4.1.php*/
     /*http://simplex.tode.cz/en/#steps*/
 
     std::ifstream f;
-    f.open("p11_converted.mps");
+    std::string file_name = argv[1];
+    f.open(file_name);
     std::string line;
+
+    int n_columns, n_rows;
+
+    std::getline(f, line);
+    n_rows = std::stoi(line);
+    std::getline(f, line);
+    n_columns = std::stoi(line);
 
     int i = 0;
     int j = 0;
-    int n_columns, n_rows;
-    std::vector<std::vector<double>> t;
-    std::vector<int> basic_vars;
 
-    if (f.is_open())
+    std::vector<std::vector<double>> t(n_rows, std::vector<double>(n_columns));
+
+    while (std::getline(f, line) && i < n_rows * n_columns)
     {
-        while (std::getline(f, line))
-        {
+        t[i / n_columns][j] = std::stof(line);
 
-            switch (i)
-            {
-            case 0:
-                n_rows = std::stoi(line);
-                break;
-            case 1:
-                n_columns = std::stoi(line);
-                t = std::vector<std::vector<double>>(n_rows, std::vector<double>(n_columns));
-                break;
-            }
-
-            if (i >= 2 && i <= (n_rows * n_columns + 1))
-            {
-                t[(i - 2) / n_columns][j] = std::stof(line);
-                j++;
-                if (j == n_columns)
-                    j = 0;
-            }
-
-            if (i > (n_rows * n_columns + 2))
-            {
-                basic_vars.push_back(std::stoi(line));
-            }
-
-            i++;
-        }
-
-        f.close();
-
-        Simplex a;
-
-        a.tableau = t;
-        a.basic_variables = basic_vars;
-        a.Solve();
-        std::cout << a.ToString();
+        j++;
+        if (j == n_columns)
+            j = 0;
+        i++;
     }
-    else
-        std::cout << "ERRO";
+
+    i = 0;
+
+    std::vector<int> basic_vars(std::stoi(line));
+    //std::cout << "  " << basic_vars.size() << "\n";
+
+    for(int &i : basic_vars)
+    {
+        std::getline(f, line);
+        i = std::stoi(line);
+    }
+
+
+    Simplex a;
+    a.tableau = t;
+    std::cout << a.ToString();
+    a.basic_variables = basic_vars;
+    a.Solve();
+    std::cout << a.ToString();
 }
