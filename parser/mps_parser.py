@@ -119,9 +119,6 @@ def MpsParse(file_name):
     i = 0
     j = 0
 
-
-
-
     for row in list(std_restrictions.items()):
         j = 0
         for column in list(std_variables.items()):
@@ -141,8 +138,17 @@ def MpsParse(file_name):
     for j in range(1, len(tableau[0])):
         tableau[0][j] = - tableau[0][j]
 
-    f.close()                
+    f.close()     
 
-    return tableau
+    #first basic variables
+    basic_variables = []
+    j = 0
+    for v in list(std_variables.items()):
+        if v[0].find('ARTIF_') != -1 or v[0].find('SLACK_') != -1:
+            basic_variables.append(j)           
+        j += 1
+
+
+    return tableau, basic_variables
 
     
