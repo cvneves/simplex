@@ -97,19 +97,10 @@ def MpsParse(file_name):
             std_variables["SLACK_" + row[0]] = ({row[0]: 1.0}, {})
         elif row[1] == 'G':
             std_variables["SURPLUS_" + row[0]] = ({row[0]: -1.0}, {})
-            std_variables["ARTIF_" + row[0]] = ({row[0]: 1, obj_func_name: M}, {})
+            std_variables["ARTIF_" + row[0]] = ({row[0]: 1, obj_func_name: -M}, {})
         elif row[1] == 'E':
-            std_variables["ARTIF_" + row[0]] = ({row[0]: 1, obj_func_name: M}, {})    
+            std_variables["ARTIF_" + row[0]] = ({row[0]: 1, obj_func_name: -M}, {})    
         
-        
-    '''
-    UP LO FX FR
-    1  0  0  0
-    0  0  1  0
-    0  1  0  0
-    1  1  0  0
-
-    '''
     for r in list(std_restrictions.items()):
         if r[0] not in std_rhs[list(std_rhs.items())[0][0]]:
             std_rhs[list(std_rhs.items())[0][0]][r[0]] = 0
@@ -146,6 +137,9 @@ def MpsParse(file_name):
             tableau[i].append(std_rhs[list(std_rhs.items())[0][0]][row[0]])
             tableau[i].insert(0,0)
         i += 1
+
+    for j in range(1, len(tableau[0])):
+        tableau[0][j] = - tableau[0][j]
 
     f.close()                
 
