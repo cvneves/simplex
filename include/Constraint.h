@@ -23,13 +23,12 @@ class Constraint
     ConstraintType constraint_type;
 
     Constraint(std::string);
-    
+
     void AddVariable(std::string, double);
     void AddRhs(std::string, double);
     void SetConstraintType(ConstraintType);
-    
-    std::string ToString();
 
+    std::string ToString();
 };
 
 #endif

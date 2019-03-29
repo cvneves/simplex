@@ -51,7 +51,22 @@ int main(int argc, char *argv[])
     {
         std::cout << c.ToString() << "\n";
     }
-    for(auto v : m.variables)
+    for (auto v : m.variables)
+    {
+        std::cout << v.ToString() << "\n";
+    }
+
+    m.StandardForm();
+
+    std::cout << "\n\n\n";
+
+    std::cout << m.objective_function.ToString() << "\n";
+
+    for (auto c : m.constraints)
+    {
+        std::cout << c.ToString() << "\n";
+    }
+    for (auto v : m.variables)
     {
         std::cout << v.ToString() << "\n";
     }

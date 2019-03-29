@@ -31,7 +31,6 @@ public:
   bool CheckInfeasibility();
 
   std::string ToString();
-
 };
 
 #endif
