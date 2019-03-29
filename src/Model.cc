@@ -27,6 +27,15 @@ void Model::SetObjective(Objective z)
 
 void Model::StandardForm()
 {
+
+    for(auto & v : variables)
+    {
+        if(v.bounds.size() == 0)
+        {
+            
+        }
+    }
+
     if (objective_function.objective_type == Objective::minimize)
     {
         objective_function.objective_type = Objective::maximize;
@@ -35,9 +44,33 @@ void Model::StandardForm()
             v.second = -v.second;
         }
     }
+    
+    for (auto & c : constraints)
+    {
+        if (c.main_rhs_value < 0)
+        {
+            c.main_rhs_value *= -1;
+            for (auto &v : c.column_value)
+            {
+                v.second *= -1;
+            }
+            switch (c.constraint_type)
+            {
+            case Constraint::equal:
+                break;
+            case Constraint::less_equal:
+                c.constraint_type = Constraint::greater_equal;
+                break;
+            case Constraint::greater_equal:
+                c.constraint_type = Constraint::less_equal;
+                break;
+            }
+        }
+    }
 
     for (auto &c : constraints)
     {
+
         if (c.constraint_type == Constraint::less_equal)
         {
             std::string slack_name = c.name + "_SLACK";
@@ -47,7 +80,7 @@ void Model::StandardForm()
             c.constraint_type = Constraint::equal;
         }
 
-        if (c.constraint_type == Constraint::greater_equal)
+        else if (c.constraint_type == Constraint::greater_equal)
         {
             std::string surplus_name = c.name + "_SURPLUS";
             Variable surplus(surplus_name, 0, std::numeric_limits<double>::infinity());
@@ -64,7 +97,7 @@ void Model::StandardForm()
             objective_function.cost_value[artif_name] = M;
         }
 
-        if (c.constraint_type == Constraint::equal)
+        else
         {
             std::string artif_name = c.name + "_ART";
             Variable artificial(artif_name, 0, std::numeric_limits<double>::infinity());
@@ -74,6 +107,7 @@ void Model::StandardForm()
             objective_function.cost_value[artif_name] = M;
         }
     }
+
 }
 
 #endif

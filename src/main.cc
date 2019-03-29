@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
     Constraint lim1("LIM1");
     lim1.AddVariable("XONE", 1);
     lim1.AddVariable("YTWO", 1);
-    lim1.AddRhs("R", 5);
+    lim1.AddRhs("R", -5);
     lim1.SetConstraintType(Constraint::less_equal);
 
     Constraint lim2("LIM2");
