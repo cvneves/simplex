@@ -5,6 +5,8 @@
 
 std::string Model::ToString()
 {
+    std::string to_string = "";
+
 }
 
 void Model::AddVariable(Variable x)

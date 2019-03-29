@@ -18,6 +18,9 @@ class Objective
     } ObjectiveType;
 
     ObjectiveType objective_type;
+    
+    Objective();
+    Objective(std::string, ObjectiveType);
 };
 
 #endif

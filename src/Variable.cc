@@ -44,7 +44,7 @@ std::string Variable::ToString()
             to_string += name + " <= " + std::to_string(bound.value) + ", ";
             break;
         case Bound::greater_equal:
-            to_string += name + " => " + std::to_string(bound.value) + ", ";
+            to_string += name + " >= " + std::to_string(bound.value) + ", ";
             break;
         case Bound::equal:
             to_string += name + " = " + std::to_string(bound.value) + ", ";
