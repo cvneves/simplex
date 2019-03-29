@@ -28,11 +28,21 @@ void Model::SetObjective(Objective z)
 void Model::StandardForm()
 {
 
-    for(auto & v : variables)
+    for (auto &v : variables)
     {
-        if(v.bounds.size() == 0)
+        if (v.bounds.size() == 0)
         {
-            
+            Variable v_plus(v.name + "+", 0, std::numeric_limits<double>::infinity());
+            Variable v_minus(v.name + "-", 0, std::numeric_limits<double>::infinity());
+
+            std::vector<double> v1;
+
+            for (auto &c : constraints)
+            {
+                //c.column_value[];
+                //c.AddVariable(v_plus, v.value);
+                //c.AddVariable(v_minus, -v.value);
+            }
         }
     }
 
@@ -44,8 +54,8 @@ void Model::StandardForm()
             v.second = -v.second;
         }
     }
-    
-    for (auto & c : constraints)
+
+    for (auto &c : constraints)
     {
         if (c.main_rhs_value < 0)
         {
@@ -107,7 +117,6 @@ void Model::StandardForm()
             objective_function.cost_value[artif_name] = M;
         }
     }
-
 }
 
 #endif
