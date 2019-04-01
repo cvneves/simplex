@@ -8,6 +8,7 @@
 #include "Variable.h"
 #include "Constraint.h"
 #include "Objective.h"
+#include "Simplex.h"
 
 #define M 1000000
 
@@ -17,7 +18,7 @@ public:
   Objective objective_function;
   std::vector<Constraint> constraints;
   std::vector<Variable> variables;
-
+  Simplex simplex;
   std::string ToString();
 
   void AddVariable(Variable);
@@ -25,6 +26,7 @@ public:
   void SetObjective(Objective);
 
   void StandardForm();
+  void Solve();
 };
 
 #endif

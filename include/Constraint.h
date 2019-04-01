@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include "Variable.h"
 
 class Constraint
 {
@@ -24,7 +25,7 @@ class Constraint
 
     Constraint(std::string);
 
-    void AddVariable(std::string, double);
+    void AddVariable(Variable, double);
     void AddRhs(std::string, double);
     void SetConstraintType(ConstraintType);
 

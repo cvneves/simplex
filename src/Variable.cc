@@ -3,57 +3,41 @@
 Variable::Variable(std::string n)
 {
     name = n;
+    lower_bound = -std::numeric_limits<double>::infinity();
+    upper_bound = std::numeric_limits<double>::infinity();
 }
 
 Variable::Variable(std::string n, double l_b, double u_b)
 {
     name = n;
-    if (l_b != -std::numeric_limits<double>::infinity())
-    {
-        Bound lower_bound(l_b, Bound::greater_equal);
-        bounds.push_back(lower_bound);
-    }
-
-    if (u_b != std::numeric_limits<double>::infinity())
-    {
-        Bound upper_bound(u_b, Bound::less_equal);
-        bounds.push_back(upper_bound);
-    }
+    lower_bound = l_b;
+    upper_bound = u_b;
 }
 
 Variable::Variable(std::string n, double fx_b)
 {
     name = n;
-    Bound fixed_bound(fx_b, Bound::equal);
-    bounds.push_back(fixed_bound);
+    upper_bound = lower_bound = fx_b;
 }
 
 std::string Variable::ToString()
 {
     std::string to_string = "";
-    int n_bounds = bounds.size();
 
-    if (n_bounds == 0)
-        return name;
+    if (lower_bound == upper_bound)
+        to_string = name + " = " + std::to_string(upper_bound);
 
-    for (auto bound : bounds)
-    {
-        switch (bound.bound_type)
-        {
-        case Bound::less_equal:
-            to_string += name + " <= " + std::to_string(bound.value) + ", ";
-            break;
-        case Bound::greater_equal:
-            to_string += name + " >= " + std::to_string(bound.value) + ", ";
-            break;
-        case Bound::equal:
-            to_string += name + " = " + std::to_string(bound.value) + ", ";
-            break;
-        }
-    }
+    else if (lower_bound == -std::numeric_limits<double>::infinity() && upper_bound == std::numeric_limits<double>::infinity())
+        to_string = name;
 
-    to_string.pop_back();
-    to_string.pop_back();
+    else if (lower_bound == -std::numeric_limits<double>::infinity())
+        to_string = name + " <= " + std::to_string(upper_bound);
+
+    else if (upper_bound == std::numeric_limits<double>::infinity())
+        to_string = name + " >= " + std::to_string(lower_bound);
+
+    else
+        to_string = std::to_string(lower_bound) + " <= " + name + " <= " + std::to_string(upper_bound);
 
     return to_string;
 }

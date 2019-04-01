@@ -5,6 +5,8 @@
 #include <vector>
 #include <map>
 
+#include "Variable.h"
+
 class Objective
 {
   public:
@@ -22,7 +24,7 @@ class Objective
     Objective();
     Objective(std::string, ObjectiveType);
 
-    void AddVariable(std::string, double);
+    void AddVariable(Variable, double);
 
     std::string ToString();
 };

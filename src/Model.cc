@@ -27,23 +27,102 @@ void Model::SetObjective(Objective z)
 
 void Model::StandardForm()
 {
-
+    std::vector<Variable> new_variables;
+    std::vector<bool> used_variables;
+    int i = 0;
     for (auto &v : variables)
     {
-        if (v.bounds.size() == 0)
-        {
-            Variable v_plus(v.name + "+", 0, std::numeric_limits<double>::infinity());
-            Variable v_minus(v.name + "-", 0, std::numeric_limits<double>::infinity());
 
-            std::vector<double> v1;
+        if (v.lower_bound == 0)
+        {
+            used_variables.push_back(true);
+            if (v.upper_bound == std::numeric_limits<double>::infinity())
+                continue;
+            else
+            {
+                Constraint c = Constraint(v.name + "_UP_BOUND");
+                c.AddVariable(v, 1);
+                c.SetConstraintType(Constraint::less_equal);
+                c.AddRhs("NEW_RHS", v.upper_bound);
+                AddConstraint(c);
+            }
+        }
+
+        /* if (v.upper_bound == 0)
+        {
+            if (v.upper_bound == std::numeric_limits<double>::infinity())
+                continue;
+            else
+            {
+                Constraint c = Constraint(v.name + "_UP_BOUND");
+                c.AddVariable(v, 1);
+                c.SetConstraintType(Constraint::less_equal);
+                c.AddRhs("NEW_RHS", v.upper_bound);
+                AddConstraint(c);
+            }
+        } */
+
+        else
+        {
+            used_variables.push_back(false);
+
+            Variable v1 = Variable(v.name + "+", 0, std::numeric_limits<double>::infinity());
+            Variable v2 = Variable(v.name + "-", 0, std::numeric_limits<double>::infinity());
 
             for (auto &c : constraints)
             {
-                //c.column_value[];
-                //c.AddVariable(v_plus, v.value);
-                //c.AddVariable(v_minus, -v.value);
+                if (c.column_value.find(v.name) == c.column_value.end())
+                    continue;
+                c.column_value[v1.name] = c.column_value[v.name];
+                c.column_value[v2.name] = -c.column_value[v.name];
+                c.column_value.erase(v.name);
             }
+
+            if (!(objective_function.cost_value.find(v.name) == objective_function.cost_value.end()))
+            {
+                objective_function.cost_value[v1.name] = objective_function.cost_value[v.name];
+                objective_function.cost_value[v2.name] = -objective_function.cost_value[v.name];
+                objective_function.cost_value.erase(v.name);
+            }
+
+            if (v.lower_bound != -std::numeric_limits<double>::infinity())
+            {
+                Constraint c = Constraint(v.name + "_LIM_LO");
+                c.AddVariable(v1, 1);
+                c.AddVariable(v2, -1);
+                c.SetConstraintType(Constraint::greater_equal);
+                c.AddRhs("NEW_RHS", v.lower_bound);
+                AddConstraint(c);
+            }
+            if (v.upper_bound != std::numeric_limits<double>::infinity())
+            {
+                Constraint c = Constraint(v.name + "_LIM_UP");
+                c.AddVariable(v1, 1);
+                c.AddVariable(v2, -1);
+                c.SetConstraintType(Constraint::less_equal);
+                c.AddRhs("NEW_RHS", v.upper_bound);
+                AddConstraint(c);
+            }
+            new_variables.push_back(v1);
+            new_variables.push_back(v2);
         }
+        i++;
+    }
+
+    std::vector<Variable> current_variables;
+    for (int j = 0; j < variables.size(); j++)
+    {
+        if (used_variables[j] == true)
+        {
+            current_variables.push_back(variables[j]);
+        }
+    }
+
+    variables = current_variables;
+
+    for (auto v : new_variables)
+    {
+        AddVariable(v);
     }
 
     if (objective_function.objective_type == Objective::minimize)
@@ -83,10 +162,11 @@ void Model::StandardForm()
 
         if (c.constraint_type == Constraint::less_equal)
         {
+
             std::string slack_name = c.name + "_SLACK";
             Variable slack(slack_name, 0, std::numeric_limits<double>::infinity());
             AddVariable(slack);
-            c.AddVariable(slack_name, 1);
+            c.AddVariable(slack, 1);
             c.constraint_type = Constraint::equal;
         }
 
@@ -95,12 +175,12 @@ void Model::StandardForm()
             std::string surplus_name = c.name + "_SURPLUS";
             Variable surplus(surplus_name, 0, std::numeric_limits<double>::infinity());
             AddVariable(surplus);
-            c.AddVariable(surplus_name, -1);
+            c.AddVariable(surplus, -1);
 
             std::string artif_name = c.name + "_ART";
             Variable artificial(artif_name, 0, std::numeric_limits<double>::infinity());
             AddVariable(artificial);
-            c.AddVariable(artif_name, 1);
+            c.AddVariable(artificial, 1);
 
             c.constraint_type = Constraint::equal;
 
@@ -112,10 +192,23 @@ void Model::StandardForm()
             std::string artif_name = c.name + "_ART";
             Variable artificial(artif_name, 0, std::numeric_limits<double>::infinity());
             AddVariable(artificial);
-            c.AddVariable(artif_name, 1);
+            c.AddVariable(artificial, 1);
 
             objective_function.cost_value[artif_name] = M;
         }
+    }
+}
+
+void Model::Solve()
+{
+    // convert to tableau
+    std::vector<std::vector<double>> t = std::vector<std::vector<double>>(constraints.size() + 1, std::vector<double>(variables.size() + 1, 0));
+    simplex.tableau = t;
+
+    simplex.tableau[0][0] = 1;
+    for(auto c : objective_function.cost_value)
+    {
+        
     }
 }
 

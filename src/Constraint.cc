@@ -6,9 +6,9 @@ Constraint::Constraint(std::string n)
     name = n;
 }
 
-void Constraint::AddVariable(std::string v_n, double v)
+void Constraint::AddVariable(Variable var, double v)
 {
-    column_value[v_n] = v;
+    column_value[var.name] = v;
 }
 
 void Constraint::AddRhs(std::string r_n, double v)
@@ -17,7 +17,7 @@ void Constraint::AddRhs(std::string r_n, double v)
     main_rhs_value = v;
 }
 
-void Constraint::SetConstraintType(ConstraintType c_t)
+void Constraint::SetConstraintType(Constraint::ConstraintType c_t)
 {
     constraint_type = c_t;
 }

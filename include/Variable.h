@@ -6,13 +6,13 @@
 #include <map>
 
 #include <limits>
-#include "Bound.h"
+
 
 class Variable
 {
 public:
   std::string name;
-  std::vector<Bound> bounds;
+  double lower_bound, upper_bound;
 
   Variable(std::string);
   Variable(std::string, double, double);

@@ -8,9 +8,9 @@ Objective::Objective(std::string n, ObjectiveType o_t)
     objective_type = o_t;
 }
 
-void Objective::AddVariable(std::string n, double v)
+void Objective::AddVariable(Variable var, double v)
 {
-    cost_value[n] = v;
+    cost_value[var.name] = v;
 }
 
 std::string Objective::ToString()
