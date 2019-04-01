@@ -208,15 +208,39 @@ void Model::Solve()
     simplex.tableau[0][0] = 1;
 
     int i = 0;
-    for(auto var : variables)
+    for (auto var : variables)
     {
-        if(objective_function.cost_value.find(var.name) != objective_function.cost_value.end())
+        if (objective_function.cost_value.find(var.name) != objective_function.cost_value.end())
         {
-            simplex.tableau[0][i+1] = objective_function.cost_value[var.name];
+            simplex.tableau[0][i + 1] = -objective_function.cost_value[var.name];
         }
-
         i++;
     }
+    simplex.tableau[0].push_back(0);
+
+    i = 1;
+    for (auto constr : constraints)
+    {
+        int j = 0;
+        for (auto var : variables)
+        {
+            if (constr.column_value.find(var.name) != constr.column_value.end())
+            {
+                simplex.tableau[i][j + 1] = constr.column_value[var.name];
+            }
+            j++;
+        }
+        i++;
+    }
+
+    i = 1;
+    for (auto constr : constraints)
+    {
+        simplex.tableau[i].push_back(constr.main_rhs_value);
+        i++;
+    }
+
+    //simplex.Solve();
 }
 
 #endif
