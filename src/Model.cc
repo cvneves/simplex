@@ -206,9 +206,16 @@ void Model::Solve()
     simplex.tableau = t;
 
     simplex.tableau[0][0] = 1;
-    for(auto c : objective_function.cost_value)
+
+    int i = 0;
+    for(auto var : variables)
     {
-        
+        if(objective_function.cost_value.find(var.name) != objective_function.cost_value.end())
+        {
+            simplex.tableau[0][i+1] = objective_function.cost_value[var.name];
+        }
+
+        i++;
     }
 }
 
