@@ -2,6 +2,7 @@
 
 Variable::Variable(std::string n)
 {
+    initial_basic = 0;
     name = n;
     lower_bound = -std::numeric_limits<double>::infinity();
     upper_bound = std::numeric_limits<double>::infinity();
@@ -9,6 +10,7 @@ Variable::Variable(std::string n)
 
 Variable::Variable(std::string n, double l_b, double u_b)
 {
+    initial_basic = 0;
     name = n;
     lower_bound = l_b;
     upper_bound = u_b;
@@ -16,6 +18,7 @@ Variable::Variable(std::string n, double l_b, double u_b)
 
 Variable::Variable(std::string n, double fx_b)
 {
+    initial_basic = 0;
     name = n;
     upper_bound = lower_bound = fx_b;
 }

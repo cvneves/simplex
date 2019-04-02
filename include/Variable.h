@@ -18,6 +18,7 @@ public:
   Variable(std::string, double, double);
   Variable(std::string, double);
   std::string ToString();
+  bool initial_basic;
 };
 
 #endif

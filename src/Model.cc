@@ -165,7 +165,9 @@ void Model::StandardForm()
 
             std::string slack_name = c.name + "_SLACK";
             Variable slack(slack_name, 0, std::numeric_limits<double>::infinity());
+            slack.initial_basic = 1;
             AddVariable(slack);
+
             c.AddVariable(slack, 1);
             c.constraint_type = Constraint::equal;
         }
@@ -179,22 +181,24 @@ void Model::StandardForm()
 
             std::string artif_name = c.name + "_ART";
             Variable artificial(artif_name, 0, std::numeric_limits<double>::infinity());
+            artificial.initial_basic = 1;
             AddVariable(artificial);
             c.AddVariable(artificial, 1);
 
             c.constraint_type = Constraint::equal;
 
-            objective_function.cost_value[artif_name] = M;
+            objective_function.cost_value[artif_name] = -M;
         }
 
         else
         {
             std::string artif_name = c.name + "_ART";
             Variable artificial(artif_name, 0, std::numeric_limits<double>::infinity());
+            artificial.initial_basic = 1;
             AddVariable(artificial);
             c.AddVariable(artificial, 1);
 
-            objective_function.cost_value[artif_name] = M;
+            objective_function.cost_value[artif_name] = -M;
         }
     }
 }
@@ -240,7 +244,17 @@ void Model::Solve()
         i++;
     }
 
-    //simplex.Solve();
+    i = 0;
+    for (auto v : variables)
+    {
+
+        if (v.initial_basic == true)
+            simplex.basic_variables.push_back(i);
+
+        i++;
+    }
+
+    simplex.Solve();
 }
 
 #endif
