@@ -259,7 +259,6 @@ void Model::Solve()
     }
 
 
-    std::cout << simplex.ToString();
     simplex.Solve();
 }
 

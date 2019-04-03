@@ -5,8 +5,12 @@
 
 int Simplex::FindPivotColumn()
 {
+    std::vector<double> v = tableau[0];
 
-    int j = min_element(tableau[0].begin() + 1, tableau[0].end() - 1) - tableau[0].begin();
+    int j;
+
+    j = min_element(v.begin() + 1, v.end() - 1) - v.begin();
+
     return j;
 }
 
@@ -39,10 +43,14 @@ void Simplex::Pivot(int r, int i, int j)
 
 bool Simplex::CheckOptimality()
 {
+
     for (auto a : artificial_variables)
     {
         if (solution[a] != 0)
+        {
+            solution[a] = 0;
             return false;
+        }
     }
 
     if (*min_element(tableau[0].begin() + 1, tableau[0].end() - 1) >= 0)
@@ -85,7 +93,6 @@ void Simplex::Solve()
         int i = FindPivotRow(j);
 
         //std::cout << i << ", " << j  << "\n";
-
         std::cout << ToString();
 
         basic_variables[i - 1] = j - 1;
