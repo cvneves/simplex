@@ -19,6 +19,7 @@ public:
   Variable(std::string, double);
   std::string ToString();
   bool initial_basic;
+  bool is_artificial;
 };
 
 #endif

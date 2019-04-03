@@ -5,7 +5,8 @@
 
 int Simplex::FindPivotColumn()
 {
-    int j = min_element(tableau[0].begin() + 1, tableau[0].end()) - tableau[0].begin();
+
+    int j = min_element(tableau[0].begin() + 1, tableau[0].end() - 1) - tableau[0].begin();
     return j;
 }
 
@@ -38,8 +39,17 @@ void Simplex::Pivot(int r, int i, int j)
 
 bool Simplex::CheckOptimality()
 {
+    for (auto a : artificial_variables)
+    {
+        if (solution[a] != 0)
+            return false;
+    }
+
     if (*min_element(tableau[0].begin() + 1, tableau[0].end() - 1) >= 0)
+    {
         return true;
+    }
+
     return false;
 }
 
@@ -48,10 +58,23 @@ bool Simplex::CheckInfeasibility()
     return false;
 }
 
+void Simplex::CalculateSolution()
+{
+    int count = 0;
+    for (int i : basic_variables)
+    {
+        solution[i] = tableau[count + 1][tableau[0].size() - 1] / tableau[count + 1][i + 1];
+        count++;
+    }
+}
+
 void Simplex::Solve()
 {
+    solution = std::vector<double>(tableau[0].size() - 2, 0);
+
     while (true)
     {
+        CalculateSolution();
         is_optimal = CheckOptimality();
         is_infeasible = CheckInfeasibility();
 
@@ -61,6 +84,10 @@ void Simplex::Solve()
         int j = FindPivotColumn();
         int i = FindPivotRow(j);
 
+        //std::cout << i << ", " << j  << "\n";
+
+        std::cout << ToString();
+
         basic_variables[i - 1] = j - 1;
 
         for (int m = 0; m < tableau.size(); m++)
@@ -69,19 +96,6 @@ void Simplex::Solve()
                 continue;
 
             Pivot(m, i, j);
-        }
-    }
-
-    objective_value = tableau[0][tableau[0].size() - 1] / *tableau[0].begin();
-
-    solution = std::vector<double>(tableau[0].size() - 2, 0);
-
-    {
-        int count = 0;
-        for (int i : basic_variables)
-        {
-            solution[i] = tableau[count + 1][tableau[0].size() - 1] / tableau[count + 1][i + 1];
-            count++;
         }
     }
 }

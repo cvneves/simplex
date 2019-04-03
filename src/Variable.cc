@@ -2,6 +2,7 @@
 
 Variable::Variable(std::string n)
 {
+    is_artificial = 0;
     initial_basic = 0;
     name = n;
     lower_bound = -std::numeric_limits<double>::infinity();
@@ -10,6 +11,7 @@ Variable::Variable(std::string n)
 
 Variable::Variable(std::string n, double l_b, double u_b)
 {
+    is_artificial = 0;
     initial_basic = 0;
     name = n;
     lower_bound = l_b;
@@ -18,6 +20,7 @@ Variable::Variable(std::string n, double l_b, double u_b)
 
 Variable::Variable(std::string n, double fx_b)
 {
+    is_artificial = 0;
     initial_basic = 0;
     name = n;
     upper_bound = lower_bound = fx_b;

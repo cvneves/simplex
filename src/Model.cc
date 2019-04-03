@@ -27,6 +27,16 @@ void Model::SetObjective(Objective z)
 
 void Model::StandardForm()
 {
+
+    if (objective_function.objective_type == Objective::minimize)
+    {
+        objective_function.objective_type = Objective::maximize;
+        for (auto &v : objective_function.cost_value)
+        {
+            v.second = -v.second;
+        }
+    }
+
     std::vector<Variable> new_variables;
     std::vector<bool> used_variables;
     int i = 0;
@@ -125,15 +135,6 @@ void Model::StandardForm()
         AddVariable(v);
     }
 
-    if (objective_function.objective_type == Objective::minimize)
-    {
-        objective_function.objective_type = Objective::maximize;
-        for (auto &v : objective_function.cost_value)
-        {
-            v.second = -v.second;
-        }
-    }
-
     for (auto &c : constraints)
     {
         if (c.main_rhs_value < 0)
@@ -182,6 +183,7 @@ void Model::StandardForm()
             std::string artif_name = c.name + "_ART";
             Variable artificial(artif_name, 0, std::numeric_limits<double>::infinity());
             artificial.initial_basic = 1;
+            artificial.is_artificial = 1;
             AddVariable(artificial);
             c.AddVariable(artificial, 1);
 
@@ -195,6 +197,7 @@ void Model::StandardForm()
             std::string artif_name = c.name + "_ART";
             Variable artificial(artif_name, 0, std::numeric_limits<double>::infinity());
             artificial.initial_basic = 1;
+            artificial.is_artificial = 1;
             AddVariable(artificial);
             c.AddVariable(artificial, 1);
 
@@ -247,13 +250,16 @@ void Model::Solve()
     i = 0;
     for (auto v : variables)
     {
-
+        if(v.is_artificial == true)
+            simplex.artificial_variables.push_back(i);
         if (v.initial_basic == true)
             simplex.basic_variables.push_back(i);
 
         i++;
     }
 
+
+    std::cout << simplex.ToString();
     simplex.Solve();
 }
 

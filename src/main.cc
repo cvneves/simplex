@@ -10,39 +10,25 @@ int main(int argc, char *argv[])
 
     Model m;
 
-    Variable x1("XONE", 0, INFINITY);
-    Variable y2("YTWO", 0, INFINITY);
-    Variable z3("ZTHREE", 0, INFINITY);
+    
+
+    Variable x1("x1", 0, std::numeric_limits<double>::infinity());
+    Variable x2("x2", 0, std::numeric_limits<double>::infinity());
 
     Constraint lim1("LIM1");
-    lim1.AddVariable(x1, 1);
-    lim1.AddVariable(y2, 1);
-    lim1.AddRhs("R", 5);
-    lim1.SetConstraintType(Constraint::less_equal);
+    lim1.AddVariable(x1, 4);
+    lim1.AddVariable(x2, 3);
+    lim1.AddRhs("R", 12);
+    lim1.SetConstraintType(Constraint::equal);
 
-    Constraint lim2("LIM2");
-    lim2.AddVariable(x1, 1);
-    lim2.AddVariable(z3, 1);
-    lim2.AddRhs("R", 10);
-    lim2.SetConstraintType(Constraint::greater_equal);
-
-    Constraint myeqn("MYEQN");
-    myeqn.AddVariable(y2, -1);
-    myeqn.AddVariable(z3, 1);
-    myeqn.AddRhs("R", 7);
-    myeqn.SetConstraintType(Constraint::equal);
-
-    Objective z("COST", Objective::maximize);
-    z.AddVariable(x1, 1);
-    z.AddVariable(y2, 4);
-    z.AddVariable(z3, 9);
+    Objective z("COST", Objective::minimize);
+    z.AddVariable(x1, 2);
+    z.AddVariable(x2, 1);
 
     m.AddVariable(x1);
-    m.AddVariable(y2);
-    m.AddVariable(z3);
+    m.AddVariable(x2);
     m.AddConstraint(lim1);
-    m.AddConstraint(lim2);
-    m.AddConstraint(myeqn);
+
     m.SetObjective(z);
 
     std::cout << m.objective_function.ToString() << "\n";
@@ -72,6 +58,7 @@ int main(int argc, char *argv[])
     }
     std::cout << "\n";
 
+    
     m.Solve();
     std::cout << m.simplex.ToString();
 }

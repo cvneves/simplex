@@ -12,12 +12,11 @@ class Simplex
 {
 public:
   std::vector<std::vector<double>> tableau;
-  std::vector<int> B;
 
   std::vector<int> basic_variables;
+  std::vector<int> artificial_variables;
+  std::vector<int> bad_variables;
   std::vector<double> solution;
-
-  int n_variables, n_restrictions;
 
   bool is_optimal, is_infeasible;
 
@@ -29,6 +28,7 @@ public:
   bool CheckOptimality();
   void Pivot(int r, int i, int j);
   bool CheckInfeasibility();
+  void CalculateSolution();
 
   std::string ToString();
 };
