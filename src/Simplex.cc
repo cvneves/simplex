@@ -82,6 +82,7 @@ void Simplex::Solve()
 
     while (true)
     {
+        solution = std::vector<double>(tableau[0].size() - 2, 0);
         CalculateSolution();
         is_optimal = CheckOptimality();
         is_infeasible = CheckInfeasibility();
@@ -93,7 +94,7 @@ void Simplex::Solve()
         int i = FindPivotRow(j);
 
         //std::cout << i << ", " << j  << "\n";
-        std::cout << ToString();
+        //std::cout << ToString();
 
         basic_variables[i - 1] = j - 1;
 
@@ -105,6 +106,7 @@ void Simplex::Solve()
             Pivot(m, i, j);
         }
     }
+    CalculateSolution();
 }
 
 std::string Simplex::ToString()
