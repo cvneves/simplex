@@ -66,6 +66,6 @@ int main(int argc, char *argv[])
 
 
 
-    m.Solve();
-    std::cout << m.simplex.ToString();
+    //m.Solve();
+    //std::cout << m.simplex.ToString();
 }

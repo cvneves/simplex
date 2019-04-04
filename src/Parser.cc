@@ -48,9 +48,7 @@ std::vector<std::string> StringSplit(std::string str)
 Model ReadMps(std::string file_name)
 {
     std::ifstream f;
-    Model m;
     f.open(file_name);
-
     std::string line;
 
     // ROWS
@@ -128,17 +126,16 @@ Model ReadMps(std::string file_name)
         {
             rhs[str_vec[0]][str_vec[i]] = std::stod(str_vec[i + 1]);
         }
-
-  
     }
 
     // BOUNDS
 
-    std::map <std::string, std::pair<double, double>> bounds;
+    std::map<std::string, std::pair<double *, double *>> bounds_p;
+    std::vector<double *> bounds_to_delete;
 
-    for(auto v : variables)
+    for (auto v : variables)
     {
-        bounds[v.first] = ;
+        bounds_p[v.first] = std::pair<double *, double *>(NULL, NULL);
     }
 
     while (std::getline(f, line))
@@ -148,11 +145,98 @@ Model ReadMps(std::string file_name)
 
         auto str_vec = StringSplit(line);
 
+        if (str_vec[0] == "UP")
+        {
+            double *d = new double;
+            *d = std::stod(str_vec[3]);
+            bounds_p[str_vec[2]].second = d;
+            bounds_to_delete.push_back(d);
+        }
+        else if (str_vec[0] == "LO")
+        {
+            double *d = new double;
+            *d = std::stod(str_vec[3]);
+            bounds_p[str_vec[2]].first = d;
+            bounds_to_delete.push_back(d);
+        }
+        else if (str_vec[0] == "FX")
+        {
+            double *d = new double;
+            *d = std::stod(str_vec[3]);
+            bounds_p[str_vec[2]].first = bounds_p[str_vec[2]].second = d;
+            bounds_to_delete.push_back(d);
+        }
 
-
-
-        std::cout << line << "\n";
+        else if (str_vec[0] == "FR")
+        {
+            double *d1 = new double, *d2 = new double;
+            *d1 = -std::numeric_limits<double>::infinity();
+            *d2 = std::numeric_limits<double>::infinity();
+            bounds_p[str_vec[2]].first = d1;
+            bounds_p[str_vec[2]].second = d2;
+            bounds_to_delete.push_back(d1);
+            bounds_to_delete.push_back(d2);
+        }
     }
 
-    return m;
+    std::map<std::string, std::pair<double, double>> bounds;
+
+    for (auto b : bounds_p)
+    {
+        if (b.second.first == NULL && b.second.second == NULL)
+        {
+            bounds[b.first].first = 0;
+            bounds[b.first].second = std::numeric_limits<double>::infinity();
+        }
+        else if (b.second.first == NULL)
+        {
+            bounds[b.first].first = -std::numeric_limits<double>::infinity();
+            bounds[b.first].second = *(b.second.second);
+        }
+        else if (b.second.second == NULL)
+        {
+            bounds[b.first].first = *(b.second.second);
+            bounds[b.first].second = std::numeric_limits<double>::infinity();
+        }
+        else
+        {
+            bounds[b.first].first = *(b.second.first);
+            bounds[b.first].second = *(b.second.second);
+        }
+    }
+
+    for (auto b : bounds_to_delete)
+    {
+        delete b;
+    }
+
+    // Generate Model
+
+    Model model;
+    std::vector<Variable> vars;
+    std::vector<Constraint> constr;
+    Objective objective(obj_func.first, obj_func.second);
+
+    for (auto b : bounds)
+    {
+        Variable v(b.first, b.second.first, b.second.second);
+        vars.push_back(v);
+    }
+
+    for (auto l : limits)
+    {
+        Constraint c(l.first);
+        c.constraint_type = l.second;
+        constr.push_back(c);
+    }
+
+    for (auto v : variables)
+    {
+        for (auto l : v.second)
+        {
+            
+        }
+    }
+
+    return model;
 }
