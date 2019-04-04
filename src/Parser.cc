@@ -51,6 +51,8 @@ Model ReadMps(std::string file_name)
     f.open(file_name);
     std::string line;
 
+    Model model;
+
     // ROWS
 
     int line_counter = 0;
@@ -145,6 +147,7 @@ Model ReadMps(std::string file_name)
 
         auto str_vec = StringSplit(line);
 
+
         if (str_vec[0] == "UP")
         {
             double *d = new double;
@@ -164,7 +167,7 @@ Model ReadMps(std::string file_name)
             double *d = new double;
             *d = std::stod(str_vec[3]);
             bounds_p[str_vec[2]].first = bounds_p[str_vec[2]].second = d;
-            bounds_to_delete.push_back(d);
+            bounds_to_delete.push_back(d); 
         }
 
         else if (str_vec[0] == "FR")
@@ -195,7 +198,7 @@ Model ReadMps(std::string file_name)
         }
         else if (b.second.second == NULL)
         {
-            bounds[b.first].first = *(b.second.second);
+            bounds[b.first].first = *(b.second.first);
             bounds[b.first].second = std::numeric_limits<double>::infinity();
         }
         else
@@ -212,7 +215,6 @@ Model ReadMps(std::string file_name)
 
     // Generate Model
 
-    Model model;
     std::vector<Variable> vars;
     std::vector<Constraint> constr;
     Objective objective(obj_func.first, obj_func.second);
@@ -230,13 +232,32 @@ Model ReadMps(std::string file_name)
         constr.push_back(c);
     }
 
-    for (auto v : variables)
+    for (auto &c : constr)
     {
-        for (auto l : v.second)
+        for (auto v : variables)
         {
-            
+            if (v.second.find(c.name) != v.second.end())
+                c.column_value[v.first] = v.second[c.name];
         }
     }
+
+    std::string first_rhs = (rhs.begin()->first);
+
+    for (auto &c : constr)
+    {
+        c.rhs_value[first_rhs] = rhs[first_rhs][c.name];
+        c.main_rhs_value = rhs[first_rhs][c.name];
+    }
+
+    for (auto v : variables)
+    {
+        if (v.second.find(obj_func.first) != v.second.end())
+            objective.cost_value[v.first] = v.second[obj_func.first];
+    }
+
+    model.objective_function = objective;
+    model.variables = vars;
+    model.constraints = constr;
 
     return model;
 }

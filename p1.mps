@@ -18,4 +18,8 @@ BOUNDS
  UP BND1      XONE                 4
  LO BND1      YTWO                -1
  UP BND1      YTWO                 1
+ FX B         01qv__01            0.
+ FX B         01Pr__01            0.
+ FX B         01Cr__01            0.
+ FR B         01Qg__01
 ENDATA
