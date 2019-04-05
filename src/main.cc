@@ -31,10 +31,9 @@ int main(int argc, char *argv[])
     m.AddConstraint(lim1);
 
     m.SetObjective(z);*/
- 
+
     std::string file_name = argv[1];
     m = ReadMps(file_name);
-    m.StandardForm(); 
 
     std::cout << m.objective_function.ToString() << "\n";
 
@@ -45,17 +44,18 @@ int main(int argc, char *argv[])
     for (auto v : m.variables)
     {
         std::cout << v.ToString() << "\n";
-    } 
+    }
 
-
+    m.StandardForm();
     m.Solve();
 
     //std::cout << m.simplex.tableau[0][1] << "\n"
-    
+
     for (int i = 0; i < m.simplex.tableau.size(); i++)
     {
-   //     std::cout << m.simplex.tableau[i][1] << "\n";
+        //     std::cout << m.simplex.tableau[i][1] << "\n";
     }
-    //std::cout << m.simplex.ToString();
-    std::cout << "\n" << m.simplex.objective_value << "\n";
+    std::cout << m.simplex.ToString();
+    std::cout << "\n"
+              << m.simplex.objective_value << "\n";
 }

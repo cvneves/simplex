@@ -95,6 +95,8 @@ void Simplex::Solve()
         int i = FindPivotRow(j);
 
         std::cout << i << ", " << j << "\n";
+        std::cout << ToString();
+
 
         basic_variables[i - 1] = j - 1;
 
@@ -129,7 +131,7 @@ std::string Simplex::ToString()
     {
         str += std::to_string(solution[i]) + " ";
     }
-    str += "\n";
+    str += "\n\n\n";
     return str;
 }
 
