@@ -76,7 +76,7 @@ Model ReadMps(std::string file_name)
         if (str_vec[0] == "N")
         {
             obj_func.first = str_vec[1];
-            obj_func.second = Objective::maximize;
+            obj_func.second = Objective::minimize;
         }
         else if (str_vec[0] == "L")
         {
