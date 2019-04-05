@@ -46,7 +46,21 @@ int main(int argc, char *argv[])
         std::cout << v.ToString() << "\n";
     }
 
+
+    std::cout << "\n";
     m.StandardForm();
+
+    std::cout << m.objective_function.ToString() << "\n";
+
+    for (auto c : m.constraints)
+    {
+        std::cout << c.ToString() << "\n";
+    }
+    for (auto v : m.variables)
+    {
+        std::cout << v.ToString() << "\n";
+    }
+
     m.Solve();
 
     //std::cout << m.simplex.tableau[0][1] << "\n"

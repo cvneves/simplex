@@ -3,8 +3,14 @@
 
 #include "Simplex.h"
 
+struct myclass
+{
+    bool operator()(int i, int j) { return (i < j); }
+} comp;
+
 int Simplex::FindPivotColumn()
 {
+
     std::vector<double> v = tableau[0];
 
     int j;
@@ -17,15 +23,20 @@ int Simplex::FindPivotColumn()
 int Simplex::FindPivotRow(int j)
 {
     std::vector<double> v;
+    int negative_count = 0;
     for (int i = 1; i < tableau.size(); i++)
     {
         if (tableau[i][j] <= 0)
         {
             v.push_back(std::numeric_limits<double>::infinity());
+            negative_count++;
             continue;
         }
         v.push_back(tableau[i][tableau[0].size() - 1] / tableau[i][j]);
     }
+
+    if (negative_count == tableau.size() - 1);
+        std::cout << "Unbounded";
 
     int i = min_element(v.begin(), v.end()) - v.begin() + 1;
 
@@ -51,8 +62,8 @@ bool Simplex::CheckOptimality()
         {
             if (solution[a] != 0)
             {
-                solution[a] = 0;
-                return false;
+              //  solution[a] = 0;
+            //    return false;
             }
         }
         return true;
@@ -95,8 +106,7 @@ void Simplex::Solve()
         int i = FindPivotRow(j);
 
         std::cout << i << ", " << j << "\n";
-        std::cout << ToString();
-
+        //std::cout << ToString();
 
         basic_variables[i - 1] = j - 1;
 
