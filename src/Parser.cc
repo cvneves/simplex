@@ -117,6 +117,7 @@ Model ReadMps(std::string file_name)
 
     std::map<std::string, std::map<std::string, double>> rhs;
 
+    int rhs_count = 0;
     while (std::getline(f, line))
     {
         if (line == "BOUNDS")
@@ -128,7 +129,16 @@ Model ReadMps(std::string file_name)
         {
             rhs[str_vec[0]][str_vec[i]] = std::stod(str_vec[i + 1]);
         }
+        rhs_count++;
     }
+
+    if(rhs_count == 0)
+    {
+        for (auto l : limits)
+        {
+            rhs["R"][l.first] = 0;
+        }
+    } 
 
     // BOUNDS
 

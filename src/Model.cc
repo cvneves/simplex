@@ -250,7 +250,7 @@ void Model::Solve()
     i = 0;
     for (auto v : variables)
     {
-        if(v.is_artificial == true)
+        if (v.is_artificial == true)
             simplex.artificial_variables.push_back(i);
         if (v.initial_basic == true)
             simplex.basic_variables.push_back(i);
@@ -258,6 +258,34 @@ void Model::Solve()
         i++;
     }
 
+    // GETTING RID OF ARTIFICIAL VARIABLES
+    std::vector<int> artificial_rows;
+
+
+    for (auto art_var : simplex.artificial_variables)
+    {
+ 
+        for(int ii = 1; ii < simplex.tableau.size(); ii++)
+        {
+            if (simplex.tableau[ii][art_var+1] != 0)
+            {
+                artificial_rows.push_back(ii);
+            }
+        }
+    }
+
+    if (simplex.artificial_variables.size() > 0)
+    {
+        for (auto art_row : artificial_rows)
+        {
+            for (int jj = 0; jj < simplex.tableau[0].size(); jj++)
+            {
+                simplex.tableau[0][jj] -= M * simplex.tableau[art_row][jj]; 
+            }
+        }
+    }
+
+    //std::cout << simplex.ToString();
 
     simplex.Solve();
 }
