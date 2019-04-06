@@ -41,6 +41,8 @@ void Simplex::Pivot(int r, int i, int j)
     std::vector<double> v = tableau[r];
     for (int n = 0; n < tableau[r].size(); n++)
     {
+        if(n==j)
+            v[n] = 0;
         v[n] = tableau[r][n] - tableau[r][j] * tableau[i][n] / tableau[i][j];
     }
     tableau[r] = v;
@@ -91,7 +93,6 @@ void Simplex::Solve()
         int j = FindPivotColumn();
         int i = FindPivotRow(j);
 
-        std::cout << i << ", " << j << "\n";
         std::cout << tableau[i][j] << "\n";
 
         basic_variables[i - 1] = j - 1;

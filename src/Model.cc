@@ -5,9 +5,19 @@
 #include <iostream>
 #include <limits>
 
-std::string Model::ToString()
+void Model::Print()
 {
-    std::string to_string = "";
+    std::cout << objective_function.ToString() << "\n";
+
+    std::cout << "Subject to: \n";
+    for(auto c : constraints)
+    {
+        std::cout << c.ToString() << "\n";
+    }
+    for (auto v : variables)
+    {
+        std::cout << v.ToString() << "\n";
+    }
 }
 
 void Model::AddVariable(Variable x)
@@ -39,6 +49,7 @@ void Model::StandardForm()
 
     std::vector<Variable> new_variables;
     std::vector<bool> used_variables;
+
     int i = 0;
     for (auto &v : variables)
     {

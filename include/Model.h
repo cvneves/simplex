@@ -19,7 +19,8 @@ public:
   std::vector<Constraint> constraints;
   std::vector<Variable> variables;
   Simplex simplex;
-  std::string ToString();
+  
+
 
   void AddVariable(Variable);
   void AddConstraint(Constraint);
@@ -27,6 +28,7 @@ public:
 
   void StandardForm();
   void Solve();
+  void Print();
 };
 
 #endif

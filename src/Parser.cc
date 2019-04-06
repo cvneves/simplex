@@ -132,13 +132,13 @@ Model ReadMps(std::string file_name)
         rhs_count++;
     }
 
-    if(rhs_count == 0)
+    if (rhs_count == 0)
     {
         for (auto l : limits)
         {
             rhs["R"][l.first] = 0;
         }
-    } 
+    }
 
     // BOUNDS
 
@@ -156,7 +156,6 @@ Model ReadMps(std::string file_name)
             break;
 
         auto str_vec = StringSplit(line);
-
 
         if (str_vec[0] == "UP")
         {
@@ -176,8 +175,9 @@ Model ReadMps(std::string file_name)
         {
             double *d = new double;
             *d = std::stod(str_vec[3]);
-            bounds_p[str_vec[2]].first = bounds_p[str_vec[2]].second = d;
-            bounds_to_delete.push_back(d); 
+            bounds_p[str_vec[2]].first = d;
+            bounds_p[str_vec[2]].second = d;
+            bounds_to_delete.push_back(d);
         }
 
         else if (str_vec[0] == "FR")
@@ -203,7 +203,13 @@ Model ReadMps(std::string file_name)
         }
         else if (b.second.first == NULL)
         {
-            bounds[b.first].first = -std::numeric_limits<double>::infinity();
+            if (*(b.second.second) < 0)
+            {
+                bounds[b.first].first = -std::numeric_limits<double>::infinity();
+                bounds[b.first].second = *(b.second.second);
+                continue;
+            }
+            bounds[b.first].first = 0;
             bounds[b.first].second = *(b.second.second);
         }
         else if (b.second.second == NULL)

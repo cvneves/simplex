@@ -12,7 +12,17 @@ int main(int argc, char *argv[])
     Model m;
     std::string file_name = argv[1];
     m = ReadMps(file_name);
+   // m.Print();
+
     m.StandardForm();
+
+    //m.Print();
+
     m.Solve();
+
+    //std::cout << m.simplex.ToString();
+
     std::cout << m.simplex.objective_value << "\n";
+    
+
 }
