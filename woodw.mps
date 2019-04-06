@@ -21605,4 +21605,5 @@ RHS
     RHS       US0401             .13   US0402             .26
     RHS       DS0501             .55   US0501              .1
     RHS       US0502              .2   CMAX05             .77
+BOUNDS
 ENDATA

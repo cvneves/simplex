@@ -10,7 +10,6 @@ struct myclass
 
 int Simplex::FindPivotColumn()
 {
-
     std::vector<double> v = tableau[0];
     int j;
     j = min_element(v.begin() + 1, v.end() - 1) - v.begin();
@@ -24,10 +23,9 @@ int Simplex::FindPivotRow(int j)
     int negative_count = 0;
     for (int i = 1; i < tableau.size(); i++)
     {
-        if (tableau[i][j] <= 0)
+        if (tableau[i][j] <= 0 + EPSILON)
         {
             v.push_back(std::numeric_limits<double>::infinity());
-            negative_count++;
             continue;
         }
         v.push_back(tableau[i][tableau[0].size() - 1] / tableau[i][j]);
@@ -51,16 +49,8 @@ void Simplex::Pivot(int r, int i, int j)
 bool Simplex::CheckOptimality()
 {
 
-    if (*min_element(tableau[0].begin() + 1, tableau[0].end() - 1) >= 0)
+    if (*min_element(tableau[0].begin() + 1, tableau[0].end() - 1) >= 0 - EPSILON)
     {
-        for (auto a : artificial_variables)
-        {
-            if (solution[a] != 0)
-            {
-                //solution[a] = 0;
-               // return false;
-            }
-        }
         return true;
     }
 
@@ -86,13 +76,11 @@ void Simplex::Solve()
 {
     solution = std::vector<double>(tableau[0].size() - 2, 0);
 
-
     while (true)
     {
-        
+
         solution = std::vector<double>(tableau[0].size() - 2, 0);
         CalculateSolution();
-
 
         is_optimal = CheckOptimality();
         is_infeasible = CheckInfeasibility();

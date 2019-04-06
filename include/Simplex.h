@@ -8,6 +8,8 @@
 #include <string>
 #include <sstream>
 
+#define EPSILON 1e-8
+
 class Simplex
 {
 public:
