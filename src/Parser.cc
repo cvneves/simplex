@@ -21,6 +21,7 @@ std::vector<std::string> StringSplit(std::string str)
 
     while (str.size() != 0)
     {
+
         int i = 0;
         for (char c : str)
         {
@@ -47,6 +48,7 @@ std::vector<std::string> StringSplit(std::string str)
 
 Model ReadMps(std::string file_name)
 {
+
     std::ifstream f;
     f.open(file_name);
     std::string line;
@@ -261,6 +263,12 @@ Model ReadMps(std::string file_name)
 
     for (auto &c : constr)
     {
+        if (rhs[first_rhs].find(c.name) == rhs[first_rhs].end())
+        {
+            c.rhs_value[first_rhs] = 0;
+            c.main_rhs_value = 0;
+            continue;
+        }
         c.rhs_value[first_rhs] = rhs[first_rhs][c.name];
         c.main_rhs_value = rhs[first_rhs][c.name];
     }

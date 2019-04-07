@@ -10,15 +10,17 @@
 
 #define EPSILON 1e-8
 
+std::vector<long double>::iterator find_smallest(std::vector<long double>::iterator, std::vector<double>::iterator);
+
 class Simplex
 {
 public:
-  std::vector<std::vector<double>> tableau;
+  std::vector<std::vector<long double>> tableau;
 
   std::vector<int> basic_variables;
   std::vector<int> artificial_variables;
   std::vector<int> bad_variables;
-  std::vector<double> solution;
+  std::vector<long double> solution;
 
   bool is_optimal, is_infeasible;
 

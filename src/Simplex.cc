@@ -8,40 +8,56 @@ struct myclass
     bool operator()(int i, int j) { return (i < j); }
 } comp;
 
+std::vector<long double>::iterator find_smallest(std::vector<long double>::iterator a, std::vector<long double>::iterator b)
+{
+    long double smallest = *a;
+    std::vector<long double>::iterator it = a;
+    ++a;
+    for (a; a != b; ++a)
+    {
+        if (*a - smallest < -2 * EPSILON)
+        {
+            smallest = *a;
+            it = a;
+        }
+    }
+    return it;
+}
+
 int Simplex::FindPivotColumn()
 {
-    std::vector<double> v = tableau[0];
+    std::vector<long double> v = tableau[0];
     int j;
-    j = min_element(v.begin() + 1, v.end() - 1) - v.begin();
+    j = find_smallest(v.begin() + 1, v.end() - 1) - v.begin();
 
     return j;
 }
 
 int Simplex::FindPivotRow(int j)
 {
-    std::vector<double> v;
+    std::vector<long double> v;
     int negative_count = 0;
     for (int i = 1; i < tableau.size(); i++)
     {
         if (tableau[i][j] <= 0 + EPSILON)
         {
-            v.push_back(std::numeric_limits<double>::infinity());
+            v.push_back(std::numeric_limits<long double>::infinity());
             continue;
         }
         v.push_back(tableau[i][tableau[0].size() - 1] / tableau[i][j]);
     }
 
-    int i = min_element(v.begin(), v.end()) - v.begin() + 1;
+    int i = find_smallest(v.begin(), v.end()) - v.begin() + 1;
 
     return i;
 }
 
 void Simplex::Pivot(int r, int i, int j)
 {
-    std::vector<double> v = tableau[r];
+    std::vector<long double> v = tableau[r];
     for (int n = 0; n < tableau[r].size(); n++)
     {
-        if(n==j)
+        if (n == j)
             v[n] = 0;
         v[n] = tableau[r][n] - tableau[r][j] * tableau[i][n] / tableau[i][j];
     }
@@ -51,7 +67,7 @@ void Simplex::Pivot(int r, int i, int j)
 bool Simplex::CheckOptimality()
 {
 
-    if (*min_element(tableau[0].begin() + 1, tableau[0].end() - 1) >= 0 - EPSILON)
+    if (*find_smallest(tableau[0].begin() + 1, tableau[0].end() - 1) >= 0 - EPSILON)
     {
         return true;
     }
@@ -76,12 +92,12 @@ void Simplex::CalculateSolution()
 
 void Simplex::Solve()
 {
-    solution = std::vector<double>(tableau[0].size() - 2, 0);
+    solution = std::vector<long double>(tableau[0].size() - 2, 0);
 
     while (true)
     {
 
-        solution = std::vector<double>(tableau[0].size() - 2, 0);
+        solution = std::vector<long double>(tableau[0].size() - 2, 0);
         CalculateSolution();
 
         is_optimal = CheckOptimality();

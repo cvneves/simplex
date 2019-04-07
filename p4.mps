@@ -6,8 +6,10 @@ ROWS
 COLUMNS
     XONE      COST                 1   LIM1                 1
     XONE      LIM2                 1
+    YTWO      COST                 -1   LIM1                 1
+    YTWO      LIM2                 1
 RHS
-    RHS1      LIM1                 5   LIM2                 1
+    RHS1      LIM1                 5   LIM2                 -1
 BOUNDS
- FX BOUND XONE 1.64
+ FX BOUND XONE 0.
 ENDATA

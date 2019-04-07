@@ -45,10 +45,11 @@ std::string Constraint::ToString()
         sign = ">=";
         break;
     }
-    to_string.pop_back();
+    if (to_string.size() > 0)
+        to_string.pop_back();
 
-    to_string += " " + sign + " ";
-    to_string += std::to_string(main_rhs_value);
+     to_string += " " + sign + " ";
+     to_string += std::to_string(main_rhs_value);
 
     return to_string;
 }

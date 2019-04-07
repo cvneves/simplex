@@ -293,4 +293,5 @@ RHS
     CONST     ROW00077          200.   ROW00078          100.
     CONST     ROW00088          200.   ROW00089          100.
     CONST     ROW00099          200.   ROW00100          100.
+BOUNDS
 ENDATA
