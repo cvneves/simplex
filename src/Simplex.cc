@@ -3,10 +3,6 @@
 
 #include "Simplex.h"
 
-struct myclass
-{
-    bool operator()(int i, int j) { return (i < j); }
-} comp;
 
 std::vector<long double>::iterator find_smallest(std::vector<long double>::iterator a, std::vector<long double>::iterator b)
 {

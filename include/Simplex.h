@@ -9,7 +9,6 @@
 #include <sstream>
 
 #define EPSILON 1e-8
-
 std::vector<long double>::iterator find_smallest(std::vector<long double>::iterator, std::vector<double>::iterator);
 
 class Simplex
