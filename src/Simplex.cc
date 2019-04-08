@@ -22,25 +22,22 @@ std::vector<long double>::iterator find_smallest(std::vector<long double>::itera
 
 int Simplex::FindPivotColumn()
 {
-    std::vector<long double> v = tableau[0];
+    //std::vector<long double> v = tableau[0];
     int j;
-    j = find_smallest(v.begin() + 1, v.end() - 1) - v.begin();
+    j = find_smallest(tableau[0].begin() + 1, tableau[0].end() - 1) - tableau[0].begin();
 
     return j;
 }
 
 int Simplex::FindPivotRow(int j)
 {
-    std::vector<long double> v;
+    std::vector<long double> v(tableau.size(), std::numeric_limits<long double>::infinity());
     int negative_count = 0;
     for (int i = 1; i < tableau.size(); i++)
     {
         if (tableau[i][j] <= 0 + EPSILON)
-        {
-            v.push_back(std::numeric_limits<long double>::infinity());
             continue;
-        }
-        v.push_back(tableau[i][tableau[0].size() - 1] / tableau[i][j]);
+        v[i - 1] = (tableau[i][tableau[0].size() - 1] / tableau[i][j]);
     }
 
     int i = find_smallest(v.begin(), v.end()) - v.begin() + 1;
@@ -94,7 +91,7 @@ void Simplex::Solve()
     {
 
         solution = std::vector<long double>(tableau[0].size() - 2, 0);
-        CalculateSolution();
+        //CalculateSolution();
 
         is_optimal = CheckOptimality();
         is_infeasible = CheckInfeasibility();
@@ -105,7 +102,7 @@ void Simplex::Solve()
         int j = FindPivotColumn();
         int i = FindPivotRow(j);
 
-        std::cout << tableau[i][j] << "\n";
+        std::cout << i << ", " << j << "\n";
 
         basic_variables[i - 1] = j - 1;
 
