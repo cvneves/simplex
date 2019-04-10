@@ -13,7 +13,9 @@ class Matrix
 public:
   std::vector<std::vector<long double>> matrix;
 
+  Matrix();
   Matrix(int, int);
+  Matrix(std::vector<std::vector<long double>>);
   std::vector<long double> &operator[](int);
 
   std::string ToString();
@@ -22,6 +24,7 @@ public:
   int Rows();
   int Columns();
   Matrix Inverse();
+  Matrix Transpose();
 };
 
 #endif
