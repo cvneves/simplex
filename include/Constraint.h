@@ -8,28 +8,28 @@
 
 class Constraint
 {
-  public:
-    std::string name;
-    std::map<std::string, double> column_value;
-    std::map<std::string, double> rhs_value;
-    double main_rhs_value;
+public:
+  std::string name;
+  std::map<std::string, double> column_value;
+  std::map<std::string, double> rhs_value;
+  double main_rhs_value;
 
-    typedef enum
-    {
-        less_equal,
-        equal,
-        greater_equal
-    } ConstraintType;
+  typedef enum
+  {
+    less_equal,
+    equal,
+    greater_equal
+  } ConstraintType;
 
-    ConstraintType constraint_type;
+  ConstraintType constraint_type;
 
-    Constraint(std::string);
+  Constraint(std::string);
 
-    void AddVariable(Variable, double);
-    void AddRhs(std::string, double);
-    void SetConstraintType(ConstraintType);
+  void AddVariable(Variable, double);
+  void AddRhs(std::string, double);
+  void SetConstraintType(ConstraintType);
 
-    std::string ToString();
+  std::string ToString();
 };
 
 #endif
