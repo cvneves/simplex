@@ -53,21 +53,27 @@ Matrix Matrix::Inverse()
 
     for (int i = 1; i < Rows(); i++)
     {
-        int pivot_row;
 
-        for (int ii = 0; ii < Rows(); ii++)
+        for (int k = 0; k < i; k++)
         {
-            if (ii == i)
-                continue;
-            if (A[ii][0] > EPSILON || A[ii][0] < EPSILON)
-                pivot_row = ii;
-        }
+            int pivot_row;
 
-        long double element = A[i][0] / A[pivot_row][0];
+            for (int ii = 0; ii < Rows(); ii++)
+            {
+                if (ii == i)
+                    continue;
+                if (A[ii][0] > EPSILON || A[ii][0] < -EPSILON)
+                    pivot_row = ii;
+            }
 
-        for(int j = 0; j < Columns(); j++)
-        {
-            A[i][j] -= A[pivot_row][j] * element;
+            long double element = A[i][0] / A[pivot_row][0];
+
+            std::cout << element << "\n";
+
+            for (int j = 0; j < Columns(); j++)
+            {
+                A[i][j] -= A[pivot_row][j] * element;
+            }
         }
     }
 
