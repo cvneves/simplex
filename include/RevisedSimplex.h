@@ -15,6 +15,8 @@ public:
   std::vector<int> basic_variables, non_basic_variables;
 
   int FindSmallestReducedCost();
+  Eigen::VectorXd ComputeU(int);
+  long double ComputeTheta(Eigen::VectorXd);
 };
 
 #endif

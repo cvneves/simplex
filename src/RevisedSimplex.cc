@@ -1,4 +1,5 @@
 #include "RevisedSimplex.h"
+#include "Simplex.h"
 
 int RevisedSimplex::FindSmallestReducedCost()
 {
@@ -41,5 +42,49 @@ int RevisedSimplex::FindSmallestReducedCost()
 
 
     }
-    std::cout << reduced_costs;
+    //std::cout << reduced_costs;
+
+    long double smallest_c_j = reduced_costs[0];
+    int smallest_index = 0;
+
+
+    //find smallest reduced cost index
+    for(int j = 1; j < reduced_costs.size(); j++)
+    {
+        if(reduced_costs[j] - smallest_c_j < -2 * EPSILON)
+        {
+            smallest_c_j = reduced_costs[j];
+            smallest_index = j;
+        }
+    }
+
+    if(reduced_costs[smallest_index] >= 0 - EPSILON)
+        return -1;
+    
+
+    return smallest_index;
+
+}
+
+Eigen::VectorXd RevisedSimplex::ComputeU(int j)
+{
+    Eigen::VectorXd u(B.col(0).size());
+    u = B.inverse() * A.col(j);
+    
+    long double smallest_u_j = u[0];
+    int smallest_index = 0;
+
+    for(int j = 1; j < u.size(); j++)
+    {
+        if(u[j] - smallest_u_j < -2 * EPSILON)
+        {
+            smallest_u_j = u[j];
+            smallest_index = j;
+        }
+    }
+
+    if(u[smallest_index] <= 0 + EPSILON)
+        // optimal cost is -infinity
+
+    return u;
 }
