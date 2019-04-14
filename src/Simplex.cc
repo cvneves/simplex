@@ -3,7 +3,6 @@
 
 #include "Simplex.h"
 
-
 std::vector<long double>::iterator find_smallest(std::vector<long double>::iterator a, std::vector<long double>::iterator b)
 {
     long double smallest = *a;
@@ -22,10 +21,17 @@ std::vector<long double>::iterator find_smallest(std::vector<long double>::itera
 
 int Simplex::FindPivotColumn()
 {
-    //std::vector<long double> v = tableau[0];
-    int j;
+       int j;
     j = find_smallest(tableau[0].begin() + 1, tableau[0].end() - 1) - tableau[0].begin();
 
+    // int j;
+    // for (j = 1; j < tableau[0].size() - 1; j++)
+    // {
+    //     if (tableau[0][j] < 0)
+    //     {
+    //         return j;
+    //     }
+    // }
     return j;
 }
 
@@ -102,7 +108,7 @@ void Simplex::Solve()
         int j = FindPivotColumn();
         int i = FindPivotRow(j);
 
-        std::cout << i << ", " << j << "\n";
+        std::cout << tableau[i][j] << "\n";
 
         basic_variables[i - 1] = j - 1;
 
