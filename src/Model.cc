@@ -333,6 +333,8 @@ void Model::Solve()
     std::cout << revised_simplex.c << "\n";
     std::cout << revised_simplex.b << "\n"; 
     std::cout << simplex.ToString();
+
+    
     revised_simplex.Solve();
 }
 
