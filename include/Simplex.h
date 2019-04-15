@@ -17,6 +17,7 @@ public:
   std::vector<std::vector<long double>> tableau;
 
   std::vector<int> basic_variables;
+  std::vector<int> non_basic_variables;
   std::vector<int> artificial_variables;
   std::vector<int> bad_variables;
   std::vector<long double> solution;

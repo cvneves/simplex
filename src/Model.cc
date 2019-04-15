@@ -10,7 +10,7 @@ void Model::Print()
     std::cout << objective_function.ToString() << "\n";
 
     std::cout << "Subject to: \n";
-    for(auto c : constraints)
+    for (auto c : constraints)
     {
         std::cout << c.ToString() << "\n";
     }
@@ -265,6 +265,8 @@ void Model::Solve()
             simplex.artificial_variables.push_back(i);
         if (v.initial_basic == true)
             simplex.basic_variables.push_back(i);
+        else
+            simplex.non_basic_variables.push_back(i);
 
         i++;
     }
@@ -272,13 +274,12 @@ void Model::Solve()
     // GETTING RID OF ARTIFICIAL VARIABLES
     std::vector<int> artificial_rows;
 
-
     for (auto art_var : simplex.artificial_variables)
     {
- 
-        for(int ii = 1; ii < simplex.tableau.size(); ii++)
+
+        for (int ii = 1; ii < simplex.tableau.size(); ii++)
         {
-            if (simplex.tableau[ii][art_var+1] != 0)
+            if (simplex.tableau[ii][art_var + 1] != 0)
             {
                 artificial_rows.push_back(ii);
             }
@@ -291,14 +292,48 @@ void Model::Solve()
         {
             for (int jj = 0; jj < simplex.tableau[0].size(); jj++)
             {
-                simplex.tableau[0][jj] -= M * simplex.tableau[art_row][jj]; 
+                simplex.tableau[0][jj] -= M * simplex.tableau[art_row][jj];
             }
         }
     }
 
-    //std::cout << simplex.ToString();
+    // simplex.Solve();
 
-    simplex.Solve();
+    //Revised Simplex
+
+    revised_simplex.c = Eigen::VectorXd(simplex.tableau[0].size() - 2);
+    for (int j = 1; j < simplex.tableau[0].size() - 1; j++)
+    {
+        revised_simplex.c[j - 1] = -simplex.tableau[0][j];
+    }
+
+    revised_simplex.A = Eigen::MatrixXd(simplex.tableau.size() - 1, simplex.tableau[0].size() - 2);
+
+    for (i = 1; i < simplex.tableau.size(); i++)
+    {
+        for (int j = 1; j < simplex.tableau[0].size() - 1; j++)
+        {
+            revised_simplex.A(i - 1, j - 1) = simplex.tableau[i][j];
+        }
+    }
+
+    revised_simplex.b = Eigen::VectorXd(simplex.tableau.size() - 1);
+
+    for (i = 1; i < simplex.tableau.size(); i++)
+    {
+        revised_simplex.b[i - 1] = simplex.tableau[i][simplex.tableau[0].size() - 1];
+    }
+
+    revised_simplex.B = Eigen::MatrixXd(revised_simplex.A.col(0).size(), revised_simplex.A.col(0).size());
+
+    revised_simplex.basic_variables = simplex.basic_variables;
+    revised_simplex.non_basic_variables = simplex.non_basic_variables;
+
+    std::cout << revised_simplex.A << "\n";
+    std::cout << revised_simplex.c << "\n";
+    std::cout << revised_simplex.b << "\n"; 
+    std::cout << simplex.ToString();
+    revised_simplex.Solve();
 }
 
 #endif

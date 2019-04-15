@@ -9,6 +9,7 @@
 #include "Constraint.h"
 #include "Objective.h"
 #include "Simplex.h"
+#include "RevisedSimplex.h"
 
 #define M 1000000
 
@@ -19,6 +20,7 @@ public:
   std::vector<Constraint> constraints;
   std::vector<Variable> variables;
   Simplex simplex;
+  RevisedSimplex revised_simplex;
   
 
 

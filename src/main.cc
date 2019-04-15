@@ -9,16 +9,20 @@
 
 int main(int argc, char *argv[])
 {
-    /*    Model m;
+    Model m;
     std::string file_name = argv[1];
 
     m = ReadMps(file_name);
     m.StandardForm();
+
+    m.Print();
+    
+
     m.Solve();
 
-    std::cout << m.simplex.objective_value; */
+    //std::cout << m.simplex.objective_value; 
 
-    RevisedSimplex rv;
+    /*RevisedSimplex rv;
 
     rv.A = Eigen::MatrixXd(3, 7);
     rv.B = Eigen::MatrixXd(3, 3);
@@ -33,5 +37,5 @@ int main(int argc, char *argv[])
     rv.c << 19, 13, 12, 17, 0, 0, 0;
     rv.b << 225, 117, 420;
 
-    rv.Solve();
+    rv.Solve();*/
 }
