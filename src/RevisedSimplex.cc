@@ -87,10 +87,13 @@ void RevisedSimplex::Solve()
 {
     std::sort(basic_variables.begin(), basic_variables.end());
     std::sort(non_basic_variables.begin(), non_basic_variables.end());
+
     for (int j = 0; j < B.row(0).size(); j++)
     {
         B.col(j) = A.col(basic_variables[j]);
     }
+
+
 
     while (true)
     {
@@ -119,13 +122,31 @@ void RevisedSimplex::Solve()
         {
             B.col(j) = A.col(basic_variables[j]);
         }
+
+        // Eigen::VectorXd c_B(B.col(0).size());
+        // for (int i = 0; i < c_B.size(); i++)
+        // {
+        //     c_B[i] = c[basic_variables[i]];
+        // }
+
+        // std::cout << c_B.transpose() * B.inverse() * b << "\n";
+
+        std::cout << B.inverse() << "\n";
+
     }
 
     Eigen::VectorXd c_B(B.col(0).size());
     for (int i = 0; i < c_B.size(); i++)
     {
         c_B[i] = c[basic_variables[i]];
-    }
+    } 
 
-    std::cout << c_B.transpose() * B.inverse() * b << "\n";
+        // std::cout << "\n"
+        //       << B << "\n";
+
+
+        // std::cout << "\n"
+        //       << A << "\n";
+
+     std::cout << c_B.transpose() * B.inverse() * b << "\n";
 }
