@@ -12,7 +12,7 @@ typedef Eigen::Matrix< long double, Eigen::Dynamic, Eigen::Dynamic > Mat;
 class RevisedSimplex
 {
 public:
-  Mat A, B, B_inv;
+  Mat A, B, B_inv, B_u;
   Vec x, d, c, b;
   
   std::vector<int> basic_variables, non_basic_variables;
@@ -20,7 +20,7 @@ public:
   int FindSmallestReducedCost();
   Vec ComputeU(int);
   int FindSmallestTheta(Vec);
-
+  void ComputeBInv(Vec);
   void Solve();
   
 };

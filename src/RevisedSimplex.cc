@@ -83,6 +83,21 @@ int RevisedSimplex::FindSmallestTheta(Vec u)
     return basic_variables[j];
 }
 
+void RevisedSimplex::ComputeBInv(Vec u)
+{
+    for(int j = 0; j < B.cols(); j++)
+    {
+        B_u.col(j) = B.col(j);
+    }
+    for(int i = 0; i < B.rows(); i++)
+    {
+        B_u(i, B_u.size()-1) = u[i];
+    }
+
+    
+
+}
+
 void RevisedSimplex::Solve()
 {
     std::sort(basic_variables.begin(), basic_variables.end());
@@ -94,6 +109,7 @@ void RevisedSimplex::Solve()
     }
 
     B_inv = B.inverse();
+    B_u = Mat(B.cols(), B.cols() + 1);
 
     while (true)
     {
@@ -137,6 +153,7 @@ void RevisedSimplex::Solve()
             c_B[i] = c[basic_variables[i]];
         }
 
+        // show
         B_inv = B.inverse();
 
         std::cout << c_B.transpose() * B_inv * b << "\n";
