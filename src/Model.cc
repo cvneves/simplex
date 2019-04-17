@@ -303,10 +303,10 @@ void Model::Solve()
 
     // PHASE I
 
-    revised_simplex.c = Eigen::VectorXd(simplex.tableau[0].size() - 2);
-    revised_simplex.A = Eigen::MatrixXd(simplex.tableau.size() - 1, simplex.tableau[0].size() - 2);
-    revised_simplex.b = Eigen::VectorXd(simplex.tableau.size() - 1);
-    revised_simplex.B = Eigen::MatrixXd(revised_simplex.A.col(0).size(), revised_simplex.A.col(0).size());
+    revised_simplex.c = Vec(simplex.tableau[0].size() - 2);
+    revised_simplex.A = Mat(simplex.tableau.size() - 1, simplex.tableau[0].size() - 2);
+    revised_simplex.b = Vec(simplex.tableau.size() - 1);
+    revised_simplex.B = Mat(revised_simplex.A.col(0).size(), revised_simplex.A.col(0).size());
     revised_simplex.basic_variables = std::vector<int>();
     revised_simplex.non_basic_variables = std::vector<int>();
 
@@ -378,7 +378,7 @@ void Model::Solve()
     }
 
     {
-        Eigen::MatrixXd new_A(revised_simplex.A.rows(), non_artificial_variables);
+        Mat new_A(revised_simplex.A.rows(), non_artificial_variables);
 
         i = 0;
         for (int j = 0; j < revised_simplex.A.cols(); j++)
@@ -392,7 +392,7 @@ void Model::Solve()
 
         revised_simplex.A = new_A;
 
-        revised_simplex.c = Eigen::VectorXd(new_A.cols());
+        revised_simplex.c = Vec(new_A.cols());
 
         i = 0;
         for (auto var : variables)

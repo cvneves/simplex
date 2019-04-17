@@ -6,17 +6,20 @@
 #include <iostream>
 #include <algorithm>
 
+typedef Eigen::Matrix< long double, Eigen::Dynamic, 1              > Vec;
+typedef Eigen::Matrix< long double, Eigen::Dynamic, Eigen::Dynamic > Mat;
+
 class RevisedSimplex
 {
 public:
-  Eigen::MatrixXd A, B;
-  Eigen::VectorXd x, d, c, b;
+  Mat A, B, B_inv;
+  Vec x, d, c, b;
   
   std::vector<int> basic_variables, non_basic_variables;
 
   int FindSmallestReducedCost();
-  Eigen::VectorXd ComputeU(int);
-  int FindSmallestTheta(Eigen::VectorXd);
+  Vec ComputeU(int);
+  int FindSmallestTheta(Vec);
 
   void Solve();
   

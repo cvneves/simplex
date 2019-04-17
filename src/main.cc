@@ -16,11 +16,10 @@ int main(int argc, char *argv[])
     m.StandardForm();
 
     m.Print();
-    
 
-    m.Solve();
+    m.Solve(); 
 
-    //std::cout << m.simplex.objective_value; 
+    //std::cout << m.simplex.objective_value;
 
     /*RevisedSimplex rv;
 

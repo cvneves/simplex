@@ -3,8 +3,8 @@
 
 int RevisedSimplex::FindSmallestReducedCost()
 {
-    Eigen::VectorXd c_B(B.col(0).size()), reduced_costs(non_basic_variables.size());
-    Eigen::MatrixXd p(1, B.col(0).size());
+    Vec c_B(B.col(0).size()), reduced_costs(non_basic_variables.size());
+    Mat p(1, B.col(0).size());
 
     for (int i = 0; i < c_B.size(); i++)
     {
@@ -13,9 +13,9 @@ int RevisedSimplex::FindSmallestReducedCost()
 
     for (int j = 0; j < reduced_costs.size(); j++)
     {
-        Eigen::VectorXd d_B(B.size());
+        Vec d_B(B.size());
 
-        d_B = (-1) * B.inverse() * A.col(non_basic_variables[j]);
+        d_B = (-1) * B_inv * A.col(non_basic_variables[j]);
 
         reduced_costs[j] = c[non_basic_variables[j]] + (c_B.transpose() * d_B)[0];
     }
@@ -29,38 +29,38 @@ int RevisedSimplex::FindSmallestReducedCost()
     return -1;
 }
 
-Eigen::VectorXd RevisedSimplex::ComputeU(int j)
+Vec RevisedSimplex::ComputeU(int j)
 {
-    Eigen::VectorXd u(B.col(0).size());
-    u = B.inverse() * A.col(j);
+    Vec u(B.col(0).size());
+    u = B_inv * A.col(j);
     return u;
 }
 
-int RevisedSimplex::FindSmallestTheta(Eigen::VectorXd u)
+int RevisedSimplex::FindSmallestTheta(Vec u)
 {
 
     long double greatest_u_j = u[0];
     for (int j = 1; j < u.size(); j++)
     {
-        if (u[j] > greatest_u_j)
+        if (u[j] > greatest_u_j + EPSILON)
         {
             greatest_u_j = u[j];
         }
     }
 
-    if (greatest_u_j < -EPSILON)
+    if (greatest_u_j < EPSILON)
         return -1;
 
-    Eigen::VectorXd x_B(B.col(0).size());
-    x_B = B.inverse() * b;
+    Vec x_B(B.col(0).size());
+    x_B = B_inv * b;
 
     int i = 0;
 
-    Eigen::VectorXd ratios(u.size());
+    Vec ratios(u.size());
 
     for (i = 0; i < ratios.size(); i++)
     {
-        if (u[i] > 0)
+        if (u[i] > EPSILON)
             ratios[i] = x_B[i] / u[i];
         else
         {
@@ -73,7 +73,7 @@ int RevisedSimplex::FindSmallestTheta(Eigen::VectorXd u)
 
     for (i = 1; i < ratios.size(); i++)
     {
-        if (ratios[i] < theta)
+        if (ratios[i] < theta - EPSILON)
         {
             theta = ratios[i];
             j = i;
@@ -93,7 +93,7 @@ void RevisedSimplex::Solve()
         B.col(j) = A.col(basic_variables[j]);
     }
 
-
+    B_inv = B.inverse();
 
     while (true)
     {
@@ -103,7 +103,7 @@ void RevisedSimplex::Solve()
         if (entering_base == -1)
             break;
 
-        Eigen::VectorXd u = ComputeU(entering_base);
+        Vec u = ComputeU(entering_base);
 
         int leaving_base = FindSmallestTheta(u);
 
@@ -131,22 +131,22 @@ void RevisedSimplex::Solve()
 
         // std::cout << c_B.transpose() * B.inverse() * b << "\n";
 
-        std::cout << B.inverse() << "\n";
+        Vec c_B(B.col(0).size());
+        for (int i = 0; i < c_B.size(); i++)
+        {
+            c_B[i] = c[basic_variables[i]];
+        }
 
+        B_inv = B.inverse();
+
+        std::cout << c_B.transpose() * B_inv * b << "\n";
     }
 
-    Eigen::VectorXd c_B(B.col(0).size());
+    Vec c_B(B.col(0).size());
     for (int i = 0; i < c_B.size(); i++)
     {
         c_B[i] = c[basic_variables[i]];
-    } 
+    }
 
-        // std::cout << "\n"
-        //       << B << "\n";
-
-
-        // std::cout << "\n"
-        //       << A << "\n";
-
-     std::cout << c_B.transpose() * B.inverse() * b << "\n";
+    std::cout << c_B.transpose() * B_inv * b << "\n";
 }
