@@ -108,7 +108,7 @@ void Simplex::Solve()
         int j = FindPivotColumn();
         int i = FindPivotRow(j);
 
-        std::cout << tableau[i][j] << "\n";
+        //std::cout << tableau[i][j] << "\n";
 
         basic_variables[i - 1] = j - 1;
 
@@ -122,6 +122,7 @@ void Simplex::Solve()
     }
     CalculateSolution();
     objective_value = tableau[0][tableau[0].size() - 1];
+    std::cout << objective_value << "\n";
 }
 
 std::string Simplex::ToString()

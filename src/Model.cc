@@ -297,10 +297,9 @@ void Model::Solve()
         }
     }
 
-    //simplex.Solve();
+    simplex.Solve();
 
     // REVISED SIMPLEX
-
 
     // PHASE I
 
@@ -310,13 +309,13 @@ void Model::Solve()
     revised_simplex.B = Eigen::MatrixXd(revised_simplex.A.col(0).size(), revised_simplex.A.col(0).size());
     revised_simplex.basic_variables = std::vector<int>();
     revised_simplex.non_basic_variables = std::vector<int>();
-   
+
     i = 0;
     for (auto var : variables)
     {
-     //   if (objective_function.cost_value.find(var.name) != objective_function.cost_value.end())
-             //    revised_simplex.c[i] = objective_function.cost_value[var.name];
-        if(var.is_artificial == true)
+        //   if (objective_function.cost_value.find(var.name) != objective_function.cost_value.end())
+        //    revised_simplex.c[i] = objective_function.cost_value[var.name];
+        if (var.is_artificial == true)
         {
             revised_simplex.c[i] = -1;
         }
@@ -339,9 +338,9 @@ void Model::Solve()
             }
             else
             {
-                revised_simplex.A(i,j) = 0;
+                revised_simplex.A(i, j) = 0;
             }
-            
+
             j++;
         }
         i++;
@@ -360,12 +359,29 @@ void Model::Solve()
         if (v.is_artificial == true || v.initial_basic == true)
             revised_simplex.basic_variables.push_back(i);
         else
-            revised_simplex.non_basic_variables.push_back(i);   
+            revised_simplex.non_basic_variables.push_back(i);
         i++;
     }
 
+    revised_simplex.Solve();
 
+    // PHASE 2
 
+    i = 0;
+    for (auto var : variables)
+    {
+        //   if (objective_function.cost_value.find(var.name) != objective_function.cost_value.end())
+        //    revised_simplex.c[i] = objective_function.cost_value[var.name];
+        if (var.is_artificial == true)
+        {
+            revised_simplex.c[i] = 0;
+        }
+        else
+        {
+            revised_simplex.c[i] = objective_function.cost_value[var.name];
+        }
+        i++;
+    }
 
     revised_simplex.Solve();
 

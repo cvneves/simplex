@@ -18,17 +18,13 @@ int RevisedSimplex::FindSmallestReducedCost()
         d_B = (-1) * B.inverse() * A.col(non_basic_variables[j]);
 
         reduced_costs[j] = c[non_basic_variables[j]] + (c_B.transpose() * d_B)[0];
-
     }
 
-
-    
     for (int j = 0; j < reduced_costs.size(); j++)
     {
         if (reduced_costs[j] > EPSILON)
             return non_basic_variables[j];
     }
-
 
     return -1;
 }
@@ -62,9 +58,9 @@ int RevisedSimplex::FindSmallestTheta(Eigen::VectorXd u)
 
     Eigen::VectorXd ratios(u.size());
 
-    for(i = 0; i < ratios.size(); i++)
+    for (i = 0; i < ratios.size(); i++)
     {
-        if(u[i] > 0)
+        if (u[i] > 0)
             ratios[i] = x_B[i] / u[i];
         else
         {
@@ -75,9 +71,9 @@ int RevisedSimplex::FindSmallestTheta(Eigen::VectorXd u)
     long double theta = ratios[0];
     int j = 0;
 
-    for(i = 1; i < ratios.size(); i++)
+    for (i = 1; i < ratios.size(); i++)
     {
-        if(ratios[i] < theta)
+        if (ratios[i] < theta)
         {
             theta = ratios[i];
             j = i;
@@ -96,12 +92,9 @@ void RevisedSimplex::Solve()
         B.col(j) = A.col(basic_variables[j]);
     }
 
-
-    std::cout << B.col(0).size();
-
     while (true)
     {
-        
+
         int entering_base = FindSmallestReducedCost();
 
         if (entering_base == -1)
@@ -113,7 +106,6 @@ void RevisedSimplex::Solve()
 
         if (leaving_base == -1)
             break;
-
 
         int entering_index = std::find(non_basic_variables.begin(), non_basic_variables.end(), entering_base) - non_basic_variables.begin();
         int leaving_index = std::find(basic_variables.begin(), basic_variables.end(), leaving_base) - basic_variables.begin();
@@ -127,7 +119,6 @@ void RevisedSimplex::Solve()
         {
             B.col(j) = A.col(basic_variables[j]);
         }
-
     }
 
     Eigen::VectorXd c_B(B.col(0).size());
@@ -136,5 +127,5 @@ void RevisedSimplex::Solve()
         c_B[i] = c[basic_variables[i]];
     }
 
-  // std::cout << B.inverse(); 
+    std::cout << c_B.transpose() * B.inverse() * b << "\n";
 }
