@@ -15,8 +15,6 @@ int main(int argc, char *argv[])
     m = ReadMps(file_name);
     m.StandardForm();
 
-    m.Print();
-
     m.Solve(); 
 
     //std::cout << m.simplex.objective_value;

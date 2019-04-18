@@ -51,7 +51,6 @@ int RevisedSimplex::FindSmallestTheta(Vec u)
     if (greatest_u_j < EPSILON)
         return -1;
 
-    Vec x_B(B.col(0).size());
     x_B = B_inv * b;
 
     int i = 0;
@@ -87,26 +86,18 @@ int RevisedSimplex::FindSmallestTheta(Vec u)
 
 void RevisedSimplex::ComputeBInv(Vec u)
 {
-    for (int j = 0; j < B.cols(); j++)
-    {
-        B_u.col(j) = B.col(j);
-    }
-    for (int i = 0; i < B.rows(); i++)
-    {
-        B_u(i, B_u.cols() - 1) = u[i];
-    }
+    B_inv.row(l) /= u[l];
+
     for (int i = 0; i < B.rows(); i++)
     {
         if (i != l)
-            B_u.row(i) -= u[i] * B_u.row(l);
-        else
-            B_u.row(i) = 1 / u[l] * B_u.row(i);
+        {
+            if (std::abs(u[i]) < EPSILON)
+                continue;
+            B_inv.row(i) = (1 / u[i]) * B_inv.row(i) - B_inv.row(l);
+        }
     }
-
-    for (int j = 0; j < B.cols(); j++)
-    {
-        B_inv.col(j) = B_u.col(j);
-    }
+    
 }
 
 void RevisedSimplex::Solve()
@@ -120,7 +111,7 @@ void RevisedSimplex::Solve()
     }
 
     B_inv = B.inverse();
-    B_u = Mat(B.cols(), B.cols() + 1);
+    x_B = B_inv * b;
 
     while (true)
     {
@@ -137,8 +128,12 @@ void RevisedSimplex::Solve()
         if (leaving_base == -1)
             break;
 
+
         int entering_index = std::find(non_basic_variables.begin(), non_basic_variables.end(), entering_base) - non_basic_variables.begin();
         int leaving_index = std::find(basic_variables.begin(), basic_variables.end(), leaving_base) - basic_variables.begin();
+
+
+            std::cout << leaving_index << ", " << entering_index << "\n";
 
         std::swap(non_basic_variables[entering_index], basic_variables[leaving_index]);
 
@@ -168,7 +163,7 @@ void RevisedSimplex::Solve()
         ComputeBInv(u);
         //B_inv = B.inverse();
 
-        std::cout << c_B.transpose() * B_inv * b << "\n";
+        std::cout << B_inv << "\n\n";
     }
 
     Vec c_B(B.col(0).size());

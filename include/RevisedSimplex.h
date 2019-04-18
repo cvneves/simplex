@@ -13,7 +13,8 @@ class RevisedSimplex
 {
 public:
   Mat A, B, B_inv, B_u;
-  Vec x, d, c, b;
+  Vec x, d, c, b, x_B;
+  long double theta;
   int l;
 
   std::vector<int> basic_variables, non_basic_variables;
