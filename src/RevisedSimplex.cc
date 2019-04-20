@@ -97,21 +97,11 @@ void RevisedSimplex::ComputeBInv(Vec u)
             B_inv.row(i) = (1 / u[i]) * B_inv.row(i) - B_inv.row(l);
         }
     }
-    
 }
 
 void RevisedSimplex::Solve()
 {
-    std::sort(basic_variables.begin(), basic_variables.end());
-    std::sort(non_basic_variables.begin(), non_basic_variables.end());
-
-    for (int j = 0; j < B.row(0).size(); j++)
-    {
-        B.col(j) = A.col(basic_variables[j]);
-    }
-
-    B_inv = B.inverse();
-    x_B = B_inv * b;
+    // x_B = B_inv * b;
 
     while (true)
     {
@@ -128,30 +118,18 @@ void RevisedSimplex::Solve()
         if (leaving_base == -1)
             break;
 
-
         int entering_index = std::find(non_basic_variables.begin(), non_basic_variables.end(), entering_base) - non_basic_variables.begin();
         int leaving_index = std::find(basic_variables.begin(), basic_variables.end(), leaving_base) - basic_variables.begin();
 
-
-            std::cout << leaving_index << ", " << entering_index << "\n";
-
         std::swap(non_basic_variables[entering_index], basic_variables[leaving_index]);
 
-        std::sort(basic_variables.begin(), basic_variables.end());
-        std::sort(non_basic_variables.begin(), non_basic_variables.end());
+        //std::sort(basic_variables.begin(), basic_variables.end());
+        //std::sort(non_basic_variables.begin(), non_basic_variables.end());
 
         for (int j = 0; j < B.row(0).size(); j++)
         {
             B.col(j) = A.col(basic_variables[j]);
         }
-
-        // Eigen::VectorXd c_B(B.col(0).size());
-        // for (int i = 0; i < c_B.size(); i++)
-        // {
-        //     c_B[i] = c[basic_variables[i]];
-        // }
-
-        // std::cout << c_B.transpose() * B.inverse() * b << "\n";
 
         Vec c_B(B.col(0).size());
         for (int i = 0; i < c_B.size(); i++)
@@ -159,9 +137,8 @@ void RevisedSimplex::Solve()
             c_B[i] = c[basic_variables[i]];
         }
 
-        // show
         ComputeBInv(u);
-        //B_inv = B.inverse();
+        B_inv = B.inverse();
 
         std::cout << B_inv << "\n\n";
     }

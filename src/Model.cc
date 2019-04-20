@@ -363,6 +363,16 @@ void Model::Solve()
         i++;
     }
 
+    std::sort(revised_simplex.basic_variables.begin(), revised_simplex.basic_variables.end());
+    std::sort(revised_simplex.non_basic_variables.begin(), revised_simplex.non_basic_variables.end());
+
+    for (int j = 0; j < revised_simplex.B.row(0).size(); j++)
+    {
+        revised_simplex.B.col(j) = revised_simplex.A.col(revised_simplex.basic_variables[j]);
+    }
+
+    revised_simplex.B_inv = revised_simplex.B.inverse();
+
     revised_simplex.Solve();
 
     // PHASE 2
@@ -411,7 +421,6 @@ void Model::Solve()
         }
     }
 
-
     for (auto v : revised_simplex.basic_variables)
     {
         (variables.begin() + v)->initial_basic = true;
@@ -451,9 +460,9 @@ void Model::Solve()
         i++;
     }
 
- //   std::cout << revised_simplex.A << "\n\n";
- //   std::cout << revised_simplex.B << "\n\n";
-  //  std::cout << revised_simplex.c << "\n\n";
+    //   std::cout << revised_simplex.A << "\n\n";
+    //   std::cout << revised_simplex.B << "\n\n";
+    //  std::cout << revised_simplex.c << "\n\n";
 
     revised_simplex.Solve();
 }
