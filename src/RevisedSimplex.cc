@@ -3,21 +3,14 @@
 
 int RevisedSimplex::FindSmallestReducedCost()
 {
-    Vec c_B(B.col(0).size()), reduced_costs(non_basic_variables.size());
+    Vec reduced_costs(non_basic_variables.size());
     Mat p(1, B.col(0).size());
 
-    for (int i = 0; i < c_B.size(); i++)
-    {
-        c_B[i] = c[basic_variables[i]];
-    }
+    p = c_B.transpose() * B_inv;
 
     for (int j = 0; j < reduced_costs.size(); j++)
     {
-        Vec d_B(B.size());
-
-        d_B = (-1) * B_inv * A.col(non_basic_variables[j]);
-
-        reduced_costs[j] = c[non_basic_variables[j]] + (c_B.transpose() * d_B)[0];
+        reduced_costs[j] = c[non_basic_variables[j]] - (p * A.col(non_basic_variables[j]))[0];
     }
 
     for (int j = 0; j < reduced_costs.size(); j++)
@@ -51,8 +44,6 @@ int RevisedSimplex::FindSmallestTheta(Vec u)
     if (greatest_u_j < EPSILON)
         return -1;
 
-    x_B = B_inv * b;
-
     int i = 0;
 
     Vec ratios(u.size());
@@ -67,7 +58,7 @@ int RevisedSimplex::FindSmallestTheta(Vec u)
         }
     }
 
-    long double theta = ratios[0];
+    theta = ratios[0];
     int j = 0;
 
     for (i = 1; i < ratios.size(); i++)
@@ -86,7 +77,6 @@ int RevisedSimplex::FindSmallestTheta(Vec u)
 
 void RevisedSimplex::ComputeBInv(Vec u)
 {
-    B_inv.row(l) /= u[l];
 
     for (int i = 0; i < B.rows(); i++)
     {
@@ -94,14 +84,36 @@ void RevisedSimplex::ComputeBInv(Vec u)
         {
             if (std::abs(u[i]) < EPSILON)
                 continue;
-            B_inv.row(i) = (1 / u[i]) * B_inv.row(i) - B_inv.row(l);
+            B_inv.row(i) += (-u[i] / u[l]) * B_inv.row(l);
         }
     }
+
+    if (std::abs(u[l] - 1) > EPSILON)
+        B_inv.row(l) /= u[l];
 }
 
 void RevisedSimplex::Solve()
 {
-    // x_B = B_inv * b;
+
+    c_B = Vec(B.col(0).size());
+
+    x_B = B_inv * b;
+
+    x = Vec(A.cols());
+
+    for (int i = 0; i < x_B.size(); i++)
+    {
+        x[basic_variables[i]] = x_B[i];
+    }
+    for (auto i : non_basic_variables)
+    {
+        x[i] = 0;
+    }
+
+    for (int i = 0; i < c_B.size(); i++)
+    {
+        c_B[i] = c[basic_variables[i]];
+    }
 
     while (true)
     {
@@ -122,32 +134,41 @@ void RevisedSimplex::Solve()
         int leaving_index = std::find(basic_variables.begin(), basic_variables.end(), leaving_base) - basic_variables.begin();
 
         std::swap(non_basic_variables[entering_index], basic_variables[leaving_index]);
+        
+        // x[entering_base] = theta;
+        // x[leaving_base] = 0;
+        // for (int i = 0; i < u.size(); i++)
+        // {
+        //     if (i == l)
+        //         continue;
+        //     x[basic_variables[i]] -= theta * u[i];
+        // }
 
-        //std::sort(basic_variables.begin(), basic_variables.end());
-        //std::sort(non_basic_variables.begin(), non_basic_variables.end());
+        // for (int i = 0; i < x_B.size(); i++)
+        // {
+        //     x_B[i] = x[basic_variables[i]];
+        // }
 
-        for (int j = 0; j < B.row(0).size(); j++)
+        x_B[l] = theta;
+        for (int i = 0; i < u.size(); i++)
         {
-            B.col(j) = A.col(basic_variables[j]);
+            if (i == l)
+                continue;
+            x_B[i] -= theta * u[i];
         }
 
-        Vec c_B(B.col(0).size());
-        for (int i = 0; i < c_B.size(); i++)
-        {
-            c_B[i] = c[basic_variables[i]];
-        }
+        c_B[l] = c[entering_base];
 
         ComputeBInv(u);
-        B_inv = B.inverse();
+        std::cout << c_B.transpose() * x_B << "\n";
 
-        std::cout << c_B.transpose() * B_inv * b << "\n";
+        //B_inv = B.inverse();
+        // std::cout << x_B.transpose() << "\n\n";
     }
 
-    Vec c_B(B.col(0).size());
-    for (int i = 0; i < c_B.size(); i++)
-    {
-        c_B[i] = c[basic_variables[i]];
-    }
+    // std::cout << c_B.transpose() << "\n";
 
-    std::cout << c_B.transpose() * B_inv * b << "\n";
+    std::cout << "\n";
+
+    std::cout << c_B.transpose() * x_B << "\n";
 }
