@@ -140,7 +140,7 @@ void RevisedSimplex::Solve()
         ComputeBInv(u);
         B_inv = B.inverse();
 
-        std::cout << B_inv << "\n\n";
+        std::cout << c_B.transpose() * B_inv * b << "\n";
     }
 
     Vec c_B(B.col(0).size());

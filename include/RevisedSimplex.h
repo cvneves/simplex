@@ -12,10 +12,12 @@ typedef Eigen::Matrix< long double, Eigen::Dynamic, Eigen::Dynamic > Mat;
 class RevisedSimplex
 {
 public:
-  Mat A, B, B_inv, B_u;
-  Vec x, d, c, b, x_B;
+  Mat A, B, B_inv;
+  Vec x, d, c, b, x_B, c_B;
   long double theta;
   int l;
+
+
 
   std::vector<int> basic_variables, non_basic_variables;
 

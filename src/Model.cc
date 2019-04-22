@@ -297,7 +297,7 @@ void Model::Solve()
         }
     }
 
-    simplex.Solve();
+    // simplex.Solve();
 
     // REVISED SIMPLEX
 
@@ -459,6 +459,8 @@ void Model::Solve()
         revised_simplex.B.col(i) = revised_simplex.A.col(v);
         i++;
     }
+
+    revised_simplex.B_inv = revised_simplex.B.inverse();
 
     //   std::cout << revised_simplex.A << "\n\n";
     //   std::cout << revised_simplex.B << "\n\n";
