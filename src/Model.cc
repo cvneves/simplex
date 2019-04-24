@@ -379,87 +379,90 @@ void Model::Solve()
 
     // PHASE 2
 
-    // int non_artificial_variables = 0;
+    int non_artificial_variables = 0;
 
-    // for (auto var : variables)
-    // {
-    //     //   if (objective_function.cost_value.find(var.name) != objective_function.cost_value.end())
-    //     //    revised_simplex.c[i] = objective_function.cost_value[var.name];
-    //     if (var.is_artificial == false)
-    //         non_artificial_variables++;
-    // }
+    for (auto var : variables)
+    {
+        //   if (objective_function.cost_value.find(var.name) != objective_function.cost_value.end())
+        //    revised_simplex.c[i] = objective_function.cost_value[var.name];
+        if (var.is_artificial == false)
+            non_artificial_variables++;
+    }
 
-    // {
-    //     Mat new_A(revised_simplex.A.rows(), non_artificial_variables);
+    {
+        Mat new_A(revised_simplex.A.rows(), non_artificial_variables);
 
-    //     i = 0;
-    //     for (int j = 0; j < revised_simplex.A.cols(); j++)
-    //     {
-    //         if ((variables.begin() + j)->is_artificial == false)
-    //         {
-    //             new_A.col(i) = revised_simplex.A.col(j);
-    //             i++;
-    //         }
-    //     }
+        i = 0;
+        for (int j = 0; j < revised_simplex.A.cols(); j++)
+        {
+            if ((variables.begin() + j)->is_artificial == false)
+            {
+                new_A.col(i) = revised_simplex.A.col(j);
+                i++;
+            }
+        }
 
-    //     revised_simplex.A = new_A;
+        revised_simplex.A = new_A;
 
-    //     revised_simplex.c = Vec(new_A.cols());
+        revised_simplex.c = Vec(new_A.cols());
 
-    //     i = 0;
-    //     for (auto var : variables)
-    //     {
-    //         //   if (objective_function.cost_value.find(var.name) != objective_function.cost_value.end())
-    //         //    revised_simplex.c[i] = objective_function.cost_value[var.name];
-    //         if (var.is_artificial == true)
-    //         {
-    //             continue;
-    //         }
-    //         else
-    //         {
-    //             revised_simplex.c[i] = objective_function.cost_value[var.name];
-    //             i++;
-    //         }
-    //     }
-    // }
+        i = 0;
+        for (auto var : variables)
+        {
+            //   if (objective_function.cost_value.find(var.name) != objective_function.cost_value.end())
+            //    revised_simplex.c[i] = objective_function.cost_value[var.name];
+            if (var.is_artificial == true)
+            {
+                continue;
+            }
+            else
+            {
+                revised_simplex.c[i] = objective_function.cost_value[var.name];
+                i++;
+            }
+        }
+    }
 
 
-    // i = 0;
-    // for (i = 0; i < revised_simplex.basic_variables.size(); i++)
-    // {
-    //     (variables.begin() + i)->initial_basic = revised_simplex.basic_variables[i];
-    // }
+    i = 0;
+    for (i = 0; i < revised_simplex.basic_variables.size(); i++)
+    {
+        (variables.begin() + i)->initial_basic = revised_simplex.basic_variables[i];
+    }
 
-    // revised_simplex.basic_variables.clear();
+    revised_simplex.basic_variables.clear();
 
-    // i = 0;
-    // for (auto v : variables)
-    // {
-    //     if (v.is_artificial == true)
-    //         continue;
-    //     else
-    //     {
-    //         if (v.initial_basic == true)
-    //         {
-    //             revised_simplex.basic_variables.push_back(true);
-    //             i++;
-    //         }
-    //         else
-    //         {
-    //             revised_simplex.basic_variables.push_back(false);
-    //             i++;
-    //         }
-    //     }
-    // }
+    i = 0;
+    for (auto v : variables)
+    {
+        if (v.is_artificial == true)
+            continue;
+        else
+        {
+            if (v.initial_basic == true)
+            {
+                revised_simplex.basic_variables.push_back(true);
+                i++;
+            }
+            else
+            {
+                revised_simplex.basic_variables.push_back(false);
+                i++;
+            }
+        }
+    }
 
-    // i = 0;
-    // for (auto v : revised_simplex.basic_variables)
-    // {
-    //     revised_simplex.B.col(i) = revised_simplex.A.col(v);
-    //     i++;
-    // }
+    i = 0;
+    for (int j = 0; j < revised_simplex.basic_variables.size(); j++)
+    {
+        if(revised_simplex.basic_variables[j] == true)
+        {
+            revised_simplex.B.col(i) = revised_simplex.A.col(j);
+            i++;
+        }
+    }
 
-    // revised_simplex.Solve();
+    revised_simplex.Solve();
 }
 
 #endif
