@@ -192,8 +192,8 @@ void RevisedSimplex::Solve()
 
         for(int i = 0; i < x_B.size(); i++)
         {
-            if(x_B[i] < EPSILON)
-                x_B[i] = 0;
+       //     if(x_B[i] < EPSILON)
+        //        x_B[i] = 0;
         }
 
         for (int i = 0; i < ratios.size(); i++)
@@ -297,12 +297,12 @@ void RevisedSimplex::Solve()
 
 
 
-        B_inv = B.inverse();
-        //B_inv = B_inv_test;
+        //B_inv = B.inverse();
+        B_inv = B_inv_test;
 
         // x_B = B_inv * b;
 
-        std::cout << "\n\n---------------------------------------\n\n";
+        //std::cout << "\n\n---------------------------------------\n\n";
 
         // std::cout << "B_inv: \n"
         //           << B_inv << "\n\n";
@@ -325,9 +325,11 @@ void RevisedSimplex::Solve()
         // }
         // std::cout << "\n";
 
-        std::cout << B_inv - B_inv_test;
+        //std::cout << B_inv - B_inv_test;
 
-        std::cout << "\n\n---------------------------------------\n\n";
+        std::cout <<c_B.transpose() * x_B << "\n";
+
+        //std::cout << "\n\n---------------------------------------\n\n";
     }
 
     std::cout << c_B.transpose() * x_B << "\n";
