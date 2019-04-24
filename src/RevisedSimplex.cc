@@ -103,13 +103,16 @@ void RevisedSimplex::Solve()
     //B_inv = B.inverse();
     x_B = B_inv * b;
 
+    std::vector<int> basic(B.cols()), non_basic(A.cols() - B.cols());
+
     x = Vec(A.cols());
 
-    for(int i = 0, j = 0; i < basic_variables.size();i++)
+    for (int i = 0, j = 0; i < basic_variables.size(); i++)
     {
-        if(basic_variables[i] == true)
+        if (basic_variables[i] == true)
         {
             x[i] = x_B[j];
+            basic[j] = i;
             j++;
             continue;
         }
@@ -118,20 +121,15 @@ void RevisedSimplex::Solve()
 
     std::vector<bool> last_basic_variables;
 
-    int k = 2;
+    //int k = 2;
 
     while (true)
     {
-		
-
-
 
         last_basic_variables = basic_variables;
 
-    //    std::cout << "\n\n"
-         //         << B << "\n\n";
-
-        
+        //    std::cout << "\n\n"
+        //         << B << "\n\n";
 
         for (int j = 0, i = 0; j < basic_variables.size(); j++)
         {
@@ -229,8 +227,7 @@ void RevisedSimplex::Solve()
             j++;
         }
 
-
-	for (int i = 0; i < B_inv.rows(); i++)
+        for (int i = 0; i < B_inv.rows(); i++)
         {
             if (i != l)
             {
@@ -243,64 +240,79 @@ void RevisedSimplex::Solve()
         if (std::abs(u[l] - 1) > EPSILON)
             B_inv.row(l) /= u[l];
 
-	Mat B_inv_test = B_inv;
-        
+        Mat B_inv_test = B_inv;
 
-       x[entering_base] = theta;
+        x[entering_base] = theta;
 
-       for(int i = 0, j = 0; i < last_basic_variables.size(); i++)
-       {
-           if(last_basic_variables[i] == true)
-           {
-		if(i != leaving_base)
-		{
-		    x[i] = x_B[j] - theta * u[j];
-		}
-               j++;
-           }
-       }
+        for (int i = 0, j = 0; i < last_basic_variables.size(); i++)
+        {
+            if (last_basic_variables[i] == true)
+            {
+                if (i != leaving_base)
+                {
+                    x[i] = x_B[j] - theta * u[j];
+                }
+                j++;
+            }
+        }
 
-       for(int i = 0, j = 0; i < basic_variables.size(); i++)
-       {
-           if(basic_variables[i] == true)
-           {
-               x_B[j] = x[i];
-               j++;
-           }
-       } 
-	
-	//A.col(entering_base).swap(A.col(leaving_base));
-	
+        for (int i = 0, j = 0; i < basic_variables.size(); i++)
+        {
+            if (basic_variables[i] == true)
+            {
+                x_B[j] = x[i];
+                j++;
+            }
+        }
 
+        for(int i = 0, k = 0; i < basic_variables.size(); i++)
+        {
+            if(basic_variables[i] == true)
+                k++;
+
+            if(i == leaving_base)
+            {
+                k--;
+                for(int j = leaving_base; j > entering_base; j--)
+                {
+                    if(basic_variables[j] == true)
+                    {
+                        B_inv_test.row(k).swap(B_inv_test.row(k-1));
+                        k--;
+                    }
+                }        
+                break;
+            }
+        } 
 
         B_inv = B.inverse();
-       // x_B = B_inv * b;
+        // x_B = B_inv * b;
+
+        std::cout << "\n\n---------------------------------------\n\n";
+
+        std::cout << "B_inv: \n"
+                  << B_inv << "\n\n";
+        std::cout << "B_inv_1: \n"
+                  << B_inv_test << "\n\n";
+        std::cout << "x_B: " << x_B.transpose() << "\n";
+        std::cout << "c_B: " << c_B.transpose() << "\n\n";
+        std::cout << "u: " << u.transpose() << "\n\n";
+        std::cout << "j = " << entering_base << ", l = " << leaving_base << "\n\n";
 
 
-	
-
-	std::cout << "\n\n---------------------------------------\n\n";
-
-	std::cout << "B_inv: \n" << B_inv << "\n\n";
-	std::cout << "B_inv_diferenciada: \n" << B_inv_test << "\n\n";
-	std::cout << "x_B: " << x_B.transpose() << "\n";
-	std::cout << "c_B: " << c_B.transpose() << "\n\n";	 		
-
-
-	for (int i = 0; i < basic_variables.size(); i++)
+        for (int i = 0; i < last_basic_variables.size(); i++)
         {
-           std::cout << basic_variables[i] << " ";
+            std::cout << last_basic_variables[i] << " ";
+        }
+        std::cout << "\n";
+        for (int i = 0; i < basic_variables.size(); i++)
+        {
+            std::cout << basic_variables[i] << " ";
         }
         std::cout << "\n";
 
-	std::cout << "\n\n---------------------------------------\n\n";
-
-
-
+        std::cout << "\n\n---------------------------------------\n\n";
     }
-
-
-	
 
     std::cout << c_B.transpose() * x_B << "\n";
 }
