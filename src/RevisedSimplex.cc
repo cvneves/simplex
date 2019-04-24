@@ -190,10 +190,18 @@ void RevisedSimplex::Solve()
 
         Vec ratios(u.size());
 
+        for(int i = 0; i < x_B.size(); i++)
+        {
+            if(x_B[i] < EPSILON)
+                x_B[i] = 0;
+        }
+
         for (int i = 0; i < ratios.size(); i++)
         {
             if (u[i] > EPSILON)
-                ratios[i] = x_B[i] / u[i];
+                {
+                    ratios[i] = x_B[i] / u[i];
+                }
             else
             {
                 ratios[i] = std::numeric_limits<long double>::infinity();
@@ -256,6 +264,8 @@ void RevisedSimplex::Solve()
             }
         }
 
+        
+
         for (int i = 0, j = 0; i < basic_variables.size(); i++)
         {
             if (basic_variables[i] == true)
@@ -285,31 +295,37 @@ void RevisedSimplex::Solve()
             }
         } 
 
+
+
         B_inv = B.inverse();
+        //B_inv = B_inv_test;
+
         // x_B = B_inv * b;
 
         std::cout << "\n\n---------------------------------------\n\n";
 
-        std::cout << "B_inv: \n"
-                  << B_inv << "\n\n";
-        std::cout << "B_inv_1: \n"
-                  << B_inv_test << "\n\n";
-        std::cout << "x_B: " << x_B.transpose() << "\n";
-        std::cout << "c_B: " << c_B.transpose() << "\n\n";
-        std::cout << "u: " << u.transpose() << "\n\n";
-        std::cout << "j = " << entering_base << ", l = " << leaving_base << "\n\n";
+        // std::cout << "B_inv: \n"
+        //           << B_inv << "\n\n";
+        // std::cout << "B_inv_1: \n"
+        //           << B_inv_test << "\n\n";
+        // std::cout << "x_B: " << x_B.transpose() << "\n";
+        // std::cout << "c_B: " << c_B.transpose() << "\n\n";
+        // std::cout << "u: " << u.transpose() << "\n\n";
+        // std::cout << "j = " << entering_base << ", l = " << leaving_base << "\n\n";
 
 
-        for (int i = 0; i < last_basic_variables.size(); i++)
-        {
-            std::cout << last_basic_variables[i] << " ";
-        }
-        std::cout << "\n";
-        for (int i = 0; i < basic_variables.size(); i++)
-        {
-            std::cout << basic_variables[i] << " ";
-        }
-        std::cout << "\n";
+        // for (int i = 0; i < last_basic_variables.size(); i++)
+        // {
+        //     std::cout << last_basic_variables[i] << " ";
+        // }
+        // std::cout << "\n";
+        // for (int i = 0; i < basic_variables.size(); i++)
+        // {
+        //     std::cout << basic_variables[i] << " ";
+        // }
+        // std::cout << "\n";
+
+        std::cout << B_inv - B_inv_test;
 
         std::cout << "\n\n---------------------------------------\n\n";
     }
