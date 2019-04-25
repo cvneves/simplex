@@ -107,9 +107,9 @@ void RevisedSimplex::Solve()
 
     x = Vec(A.cols());
 
-    Mat B_inv_test = B_inv;
+    Mat B_inv_test = B_inv, B_inv_2 = B_inv;
 
-    for (int i = 0, j = 0; i < basic_variables.size(); i++)
+    for (int i = 0, j = 0, k = 0; i < basic_variables.size(); i++)
     {
         if (basic_variables[i] == true)
         {
@@ -118,12 +118,14 @@ void RevisedSimplex::Solve()
             j++;
             continue;
         }
+        non_basic[k] = i;
+        k++;
         x[i] = 0;
     }
 
     std::vector<bool> last_basic_variables;
 
-    int invert_step_size = 1;
+    int invert_step_size = 0;
     int invert = 0;
 
     while (true)
@@ -226,6 +228,11 @@ void RevisedSimplex::Solve()
 
         basic_variables[entering_base] = true;
         basic_variables[leaving_base] = false;
+        std::swap(*(std::find(basic.begin(), basic.end(), leaving_base)), *(std::find(non_basic.begin(), non_basic.end(), entering_base)));
+
+        for (int i = 0; i < basic_variables.size(); i++)
+        {
+        }
 
         for (int i = 0, j = 0; i < basic_variables.size(); i++)
         {
@@ -244,7 +251,6 @@ void RevisedSimplex::Solve()
                 B_inv_test.row(i) += (-u[i] / u[l]) * B_inv_test.row(l);
             }
         }
-
         if (std::abs(u[l] - 1) > EPSILON)
             B_inv_test.row(l) /= u[l];
 
@@ -271,67 +277,98 @@ void RevisedSimplex::Solve()
             }
         }
 
-        for (int i = 0, k = 0; i < basic_variables.size(); i++)
+        // for (int i = 0, k = 0; i < basic_variables.size(); i++)
+        // {
+        //     if (basic_variables[i] == true)
+        //         k++;
+
+        //     if (i == leaving_base)
+        //     {
+        //         k--;
+        //         for (int j = leaving_base; j > entering_base; j--)
+        //         {
+        //             if (basic_variables[j] == true)
+        //             {
+        //                 B_inv_test.row(k).swap(B_inv_test.row(k - 1));
+        //                 k--;
+        //             }
+        //         }
+        //         break;
+        //     }
+        // }
+
+        // if (invert < invert_step_size)
+        // {
+        //     B_inv = B_inv_test;
+        //     invert++;
+        // }
+        // else
+        // {
+        //     B_inv = B.inverse();
+        //     invert = 0;
+        // }
+
+        for (int i = 0, j = 0; i < basic_variables.size(); i++)
         {
             if (basic_variables[i] == true)
-                k++;
-
-            if (i == leaving_base)
             {
-                k--;
-                for (int j = leaving_base; j > entering_base; j--)
-                {
-                    if (basic_variables[j] == true)
-                    {
-                        B_inv_test.row(k).swap(B_inv_test.row(k - 1));
-                        k--;
-                    }
-                }
-                break;
+                int k = std::find(basic.begin(), basic.end(), i) - basic.begin();
+                B_inv.row(j) = B_inv_test.row(k);
+                std::cout << k << ", " << j << "\n\n";
+                j++;
             }
         }
 
-        if (invert < invert_step_size)
-        {
-            B_inv = B_inv_test;
-            invert++;
-        }
-        else
-        {
-            B_inv = B.inverse();
-            invert = 0;
-        }
-        
+        std::cout << "\n\n---------------------------------------\n\n";
+
+        for (int i = 0; i < basic.size(); i++)
+            std::cout << basic[i] << " ";
+        std::cout << "\n";
+        for (int i = 0; i < non_basic.size(); i++)
+            std::cout << non_basic[i] << " ";
+        std::cout << "\n";
+
+        std::sort(basic.begin(), basic.end());
+        std::sort(non_basic.begin(), non_basic.end());
+
+        //B_inv = B_inv_test;
+
+        //B_inv_2 = B_inv;
+
+        //B_inv = B.inverse();
 
         // x_B = B_inv * b;
 
+        //std::cout << entering_base << ", " << leaving_base << "\n";
+        //std::cout << c_B.transpose() * x_B << "\n";
+
+        // // std::cout << "B_inv: \n"
+        // //           << B_inv << "\n\n";
+        // // std::cout << "B_inv_1: \n"
+        // //           << B_inv_test << "\n\n";
+        // //std::cout << "x_B: " << x_B.transpose() << "\n";
+        // // std::cout << "c_B: " << c_B.transpose() << "\n\n";
+        // // std::cout << "u: " << u.transpose() << "\n\n";
+        // // std::cout << "j = " << entering_base << ", l = " << leaving_base << "\n\n";
+
+        // // for (int i = 0; i < last_basic_variables.size(); i++)
+        // // {
+        // //     std::cout << last_basic_variables[i] << " ";
+        // // }
+        // // std::cout << "\n";
+        // // for (int i = 0; i < basic_variables.size(); i++)
+        // // {
+        // //     std::cout << basic_variables[i] << " ";
+        // // }
+        // // std::cout << "\n";
+
+        //std::cout << B.inverse() << "\n\n";
+        //std::cout << B_inv_test << "\n\n";
+        std::cout << B_inv << "\n\n";
+        std::cout << B_inv_test << "\n\n";
+        // std::cout << c_B.transpose() * x_B << "\n";
+
         std::cout << "\n\n---------------------------------------\n\n";
-
-        // std::cout << "B_inv: \n"
-        //           << B_inv << "\n\n";
-        // std::cout << "B_inv_1: \n"
-        //           << B_inv_test << "\n\n";
-        //std::cout << "x_B: " << x_B.transpose() << "\n";
-        // std::cout << "c_B: " << c_B.transpose() << "\n\n";
-        // std::cout << "u: " << u.transpose() << "\n\n";
-        // std::cout << "j = " << entering_base << ", l = " << leaving_base << "\n\n";
-
-        // for (int i = 0; i < last_basic_variables.size(); i++)
-        // {
-        //     std::cout << last_basic_variables[i] << " ";
-        // }
-        // std::cout << "\n";
-        // for (int i = 0; i < basic_variables.size(); i++)
-        // {
-        //     std::cout << basic_variables[i] << " ";
-        // }
-        // std::cout << "\n";
-
-        std::cout << B_inv - B_inv_test << "\n\n";
-
-        std::cout << c_B.transpose() * x_B << "\n";
-
-        //std::cout << "\n\n---------------------------------------\n\n";
     }
 
     std::cout << c_B.transpose() * x_B << "\n";
