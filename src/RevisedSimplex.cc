@@ -107,6 +107,8 @@ void RevisedSimplex::Solve()
 
     x = Vec(A.cols());
 
+    Mat B_inv_test = B_inv;
+
     for (int i = 0, j = 0; i < basic_variables.size(); i++)
     {
         if (basic_variables[i] == true)
@@ -121,15 +123,13 @@ void RevisedSimplex::Solve()
 
     std::vector<bool> last_basic_variables;
 
-    //int k = 2;
+    int invert_step_size = 1;
+    int invert = 0;
 
     while (true)
     {
 
         last_basic_variables = basic_variables;
-
-        //    std::cout << "\n\n"
-        //         << B << "\n\n";
 
         for (int j = 0, i = 0; j < basic_variables.size(); j++)
         {
@@ -190,18 +190,18 @@ void RevisedSimplex::Solve()
 
         Vec ratios(u.size());
 
-        for(int i = 0; i < x_B.size(); i++)
+        for (int i = 0; i < x_B.size(); i++)
         {
-       //     if(x_B[i] < EPSILON)
-        //        x_B[i] = 0;
+            //     if(x_B[i] < EPSILON)
+            //        x_B[i] = 0;
         }
 
         for (int i = 0; i < ratios.size(); i++)
         {
             if (u[i] > EPSILON)
-                {
-                    ratios[i] = x_B[i] / u[i];
-                }
+            {
+                ratios[i] = x_B[i] / u[i];
+            }
             else
             {
                 ratios[i] = std::numeric_limits<long double>::infinity();
@@ -235,20 +235,18 @@ void RevisedSimplex::Solve()
             j++;
         }
 
-        for (int i = 0; i < B_inv.rows(); i++)
+        for (int i = 0; i < B_inv_test.rows(); i++)
         {
             if (i != l)
             {
                 if (std::abs(u[i]) < EPSILON)
                     continue;
-                B_inv.row(i) += (-u[i] / u[l]) * B_inv.row(l);
+                B_inv_test.row(i) += (-u[i] / u[l]) * B_inv_test.row(l);
             }
         }
 
         if (std::abs(u[l] - 1) > EPSILON)
-            B_inv.row(l) /= u[l];
-
-        Mat B_inv_test = B_inv;
+            B_inv_test.row(l) /= u[l];
 
         x[entering_base] = theta;
 
@@ -264,8 +262,6 @@ void RevisedSimplex::Solve()
             }
         }
 
-        
-
         for (int i = 0, j = 0; i < basic_variables.size(); i++)
         {
             if (basic_variables[i] == true)
@@ -275,44 +271,50 @@ void RevisedSimplex::Solve()
             }
         }
 
-        for(int i = 0, k = 0; i < basic_variables.size(); i++)
+        for (int i = 0, k = 0; i < basic_variables.size(); i++)
         {
-            if(basic_variables[i] == true)
+            if (basic_variables[i] == true)
                 k++;
 
-            if(i == leaving_base)
+            if (i == leaving_base)
             {
                 k--;
-                for(int j = leaving_base; j > entering_base; j--)
+                for (int j = leaving_base; j > entering_base; j--)
                 {
-                    if(basic_variables[j] == true)
+                    if (basic_variables[j] == true)
                     {
-                        B_inv_test.row(k).swap(B_inv_test.row(k-1));
+                        B_inv_test.row(k).swap(B_inv_test.row(k - 1));
                         k--;
                     }
-                }        
+                }
                 break;
             }
-        } 
+        }
 
-
-
-        //B_inv = B.inverse();
-        B_inv = B_inv_test;
+        if (invert < invert_step_size)
+        {
+            B_inv = B_inv_test;
+            invert++;
+        }
+        else
+        {
+            B_inv = B.inverse();
+            invert = 0;
+        }
+        
 
         // x_B = B_inv * b;
 
-        //std::cout << "\n\n---------------------------------------\n\n";
+        std::cout << "\n\n---------------------------------------\n\n";
 
         // std::cout << "B_inv: \n"
         //           << B_inv << "\n\n";
         // std::cout << "B_inv_1: \n"
         //           << B_inv_test << "\n\n";
-        // std::cout << "x_B: " << x_B.transpose() << "\n";
+        //std::cout << "x_B: " << x_B.transpose() << "\n";
         // std::cout << "c_B: " << c_B.transpose() << "\n\n";
         // std::cout << "u: " << u.transpose() << "\n\n";
         // std::cout << "j = " << entering_base << ", l = " << leaving_base << "\n\n";
-
 
         // for (int i = 0; i < last_basic_variables.size(); i++)
         // {
@@ -325,9 +327,9 @@ void RevisedSimplex::Solve()
         // }
         // std::cout << "\n";
 
-        //std::cout << B_inv - B_inv_test;
+        std::cout << B_inv - B_inv_test << "\n\n";
 
-        std::cout <<c_B.transpose() * x_B << "\n";
+        std::cout << c_B.transpose() * x_B << "\n";
 
         //std::cout << "\n\n---------------------------------------\n\n";
     }
