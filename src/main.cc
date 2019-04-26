@@ -11,13 +11,14 @@ int main(int argc, char *argv[])
 {
     Model m;
     std::string file_name = argv[1];
+    std::string solve_mode = argv[2];
 
     m = ReadMps(file_name);
     m.StandardForm();
 
     //m.Print();
 
-    m.Solve(); 
+    m.Solve(solve_mode); 
 
     //std::cout << m.simplex.objective_value;
 

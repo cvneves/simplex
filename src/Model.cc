@@ -217,9 +217,10 @@ void Model::StandardForm()
     }
 }
 
-void Model::Solve()
+void Model::Solve(std::string mode)
 {
     // convert to tableau
+    
     std::vector<std::vector<long double>> t = std::vector<std::vector<long double>>(constraints.size() + 1, std::vector<long double>(variables.size() + 1, 0));
     simplex.tableau = t;
 

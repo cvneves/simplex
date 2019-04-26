@@ -29,7 +29,7 @@ public:
   void SetObjective(Objective);
 
   void StandardForm();
-  void Solve();
+  void Solve(std::string);
   void Print();
 };
 

@@ -107,7 +107,7 @@ void RevisedSimplex::Solve()
 
     x = Vec(A.cols());
 
-    Mat B_inv_test = B_inv, B_inv_2 = B_inv;
+    Mat B_inv_test = B_inv, B_inv_2 = B_inv, sorted_B_inv = B_inv;
 
     for (int i = 0, j = 0, k = 0; i < basic_variables.size(); i++)
     {
@@ -128,9 +128,9 @@ void RevisedSimplex::Solve()
     int invert_step_size = 0;
     int invert = 0;
 
-    std::cout << "\n"
-              << B_inv << "\n\n";
-    std::cout << B_inv_test << "\n\n";
+    // std::cout << "\n"
+    //           << B_inv << "\n\n";
+    // std::cout << B_inv_test << "\n\n";
 
     while (true)
     {
@@ -240,17 +240,17 @@ void RevisedSimplex::Solve()
             j++;
         }
 
-        for (int i = 0; i < B_inv_test.rows(); i++)
+        for (int i = 0; i < B_inv.rows(); i++)
         {
             if (i != l)
             {
                 if (std::abs(u[i]) < EPSILON)
                     continue;
-                B_inv_test.row(i) += (-u[i] / u[l]) * B_inv_test.row(l);
+                B_inv.row(i) += (-u[i] / u[l]) * B_inv.row(l);
             }
         }
         if (std::abs(u[l] - 1) > EPSILON)
-            B_inv_test.row(l) /= u[l];
+            B_inv.row(l) /= u[l];
 
         x[entering_base] = theta;
 
@@ -280,20 +280,20 @@ void RevisedSimplex::Solve()
             if (basic_variables[i] == true)
             {
                 int k = std::find(basic.begin(), basic.end(), i) - basic.begin();
-                B_inv.row(j) = B_inv_test.row(k);
-                std::cout << k << ", " << j << "\n\n";
+                sorted_B_inv.row(j) = B_inv.row(k);
+                // std::cout << k << ", " << j << "\n\n";
                 j++;
             }
         }
 
-        std::cout << "\n\n---------------------------------------\n\n";
+        // std::cout << "\n\n---------------------------------------\n\n";
 
-        for (int i = 0; i < basic.size(); i++)
-            std::cout << basic[i] << " ";
-        std::cout << "\n";
-        for (int i = 0; i < non_basic.size(); i++)
-            std::cout << non_basic[i] << " ";
-        std::cout << "\n";
+        // for (int i = 0; i < basic.size(); i++)
+        //     std::cout << basic[i] << " ";
+        // std::cout << "\n";
+        // for (int i = 0; i < non_basic.size(); i++)
+        //     std::cout << non_basic[i] << " ";
+        // std::cout << "\n";
 
         std::sort(basic.begin(), basic.end());
         std::sort(non_basic.begin(), non_basic.end());
@@ -301,26 +301,26 @@ void RevisedSimplex::Solve()
 
 
         //B_inv = B.inverse();
-        B_inv_2 = B_inv_test;
+        B_inv = sorted_B_inv;
 
-        for (int i = 0; i < last_basic_variables.size(); i++)
-        {
-            std::cout << last_basic_variables[i] << " ";
-        }
-        std::cout << "\n";
-        for (int i = 0; i < basic_variables.size(); i++)
-        {
-            std::cout << basic_variables[i] << " ";
-        }
-        std::cout << "\n";
+        // for (int i = 0; i < last_basic_variables.size(); i++)
+        // {
+        //     std::cout << last_basic_variables[i] << " ";
+        // }
+        // std::cout << "\n";
+        // for (int i = 0; i < basic_variables.size(); i++)
+        // {
+        //     std::cout << basic_variables[i] << " ";
+        // }
+        // std::cout << "\n";
 
-        std::cout << "\n"
-                  << B_inv << "\n\n";
-        std::cout << B_inv_2 << "\n\n";
+        // std::cout << "\n"
+        //           << B_inv << "\n\n";
+        // std::cout << B_inv_2 << "\n\n";
 
-        B_inv_test = B_inv;
+        // B_inv_test = B_inv;
 
-        std::cout << "\n\n---------------------------------------\n\n";
+        // std::cout << "\n\n---------------------------------------\n\n";
     }
 
     std::cout << c_B.transpose() * x_B << "\n";
