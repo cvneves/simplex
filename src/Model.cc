@@ -220,252 +220,258 @@ void Model::StandardForm()
 void Model::Solve(std::string mode)
 {
     // convert to tableau
-    
-    std::vector<std::vector<long double>> t = std::vector<std::vector<long double>>(constraints.size() + 1, std::vector<long double>(variables.size() + 1, 0));
-    simplex.tableau = t;
-
-    simplex.tableau[0][0] = 1;
-
-    int i = 0;
-    for (auto var : variables)
+    if(mode == "0")
     {
-        if (objective_function.cost_value.find(var.name) != objective_function.cost_value.end())
-        {
-            simplex.tableau[0][i + 1] = -objective_function.cost_value[var.name];
-        }
-        i++;
-    }
-    simplex.tableau[0].push_back(0);
+        std::vector<std::vector<long double>> t = std::vector<std::vector<long double>>(constraints.size() + 1, std::vector<long double>(variables.size() + 1, 0));
+        simplex.tableau = t;
 
-    i = 1;
-    for (auto constr : constraints)
-    {
-        int j = 0;
+        simplex.tableau[0][0] = 1;
+
+        int i = 0;
         for (auto var : variables)
         {
-            if (constr.column_value.find(var.name) != constr.column_value.end())
+            if (objective_function.cost_value.find(var.name) != objective_function.cost_value.end())
             {
-                simplex.tableau[i][j + 1] = constr.column_value[var.name];
+                simplex.tableau[0][i + 1] = -objective_function.cost_value[var.name];
             }
-            j++;
+            i++;
         }
-        i++;
-    }
+        simplex.tableau[0].push_back(0);
 
-    i = 1;
-    for (auto constr : constraints)
-    {
-        simplex.tableau[i].push_back(constr.main_rhs_value);
-        i++;
-    }
-
-    i = 0;
-    for (auto v : variables)
-    {
-        if (v.is_artificial == true)
-            simplex.artificial_variables.push_back(i);
-        if (v.initial_basic == true)
-            simplex.basic_variables.push_back(i);
-        else
-            simplex.non_basic_variables.push_back(i);
-
-        i++;
-    }
-
-    // GETTING RID OF ARTIFICIAL VARIABLES
-    std::vector<int> artificial_rows;
-
-    for (auto art_var : simplex.artificial_variables)
-    {
-
-        for (int ii = 1; ii < simplex.tableau.size(); ii++)
+        i = 1;
+        for (auto constr : constraints)
         {
-            if (simplex.tableau[ii][art_var + 1] != 0)
+            int j = 0;
+            for (auto var : variables)
             {
-                artificial_rows.push_back(ii);
+                if (constr.column_value.find(var.name) != constr.column_value.end())
+                {
+                    simplex.tableau[i][j + 1] = constr.column_value[var.name];
+                }
+                j++;
             }
+            i++;
         }
-    }
 
-    if (simplex.artificial_variables.size() > 0)
-    {
-        for (auto art_row : artificial_rows)
+        i = 1;
+        for (auto constr : constraints)
         {
-            for (int jj = 0; jj < simplex.tableau[0].size(); jj++)
+            simplex.tableau[i].push_back(constr.main_rhs_value);
+            i++;
+        }
+
+        i = 0;
+        for (auto v : variables)
+        {
+            if (v.is_artificial == true)
+                simplex.artificial_variables.push_back(i);
+            if (v.initial_basic == true)
+                simplex.basic_variables.push_back(i);
+            else
+                simplex.non_basic_variables.push_back(i);
+
+            i++;
+        }
+
+        // GETTING RID OF ARTIFICIAL VARIABLES
+        std::vector<int> artificial_rows;
+
+        for (auto art_var : simplex.artificial_variables)
+        {
+
+            for (int ii = 1; ii < simplex.tableau.size(); ii++)
             {
-                simplex.tableau[0][jj] -= M * simplex.tableau[art_row][jj];
+                if (simplex.tableau[ii][art_var + 1] != 0)
+                {
+                    artificial_rows.push_back(ii);
+                }
             }
         }
+
+        if (simplex.artificial_variables.size() > 0)
+        {
+            for (auto art_row : artificial_rows)
+            {
+                for (int jj = 0; jj < simplex.tableau[0].size(); jj++)
+                {
+                    simplex.tableau[0][jj] -= M * simplex.tableau[art_row][jj];
+                }
+            }
+        }
+
+        simplex.Solve();
     }
-
-    //simplex.Solve();
-
     // REVISED SIMPLEX
 
     // PHASE I
-
-    revised_simplex.c = Vec(simplex.tableau[0].size() - 2);
-    revised_simplex.A = Mat(simplex.tableau.size() - 1, simplex.tableau[0].size() - 2);
-    revised_simplex.b = Vec(simplex.tableau.size() - 1);
-    revised_simplex.B = Mat(revised_simplex.A.col(0).size(), revised_simplex.A.col(0).size());
-    revised_simplex.basic_variables = std::vector<bool>();
-
-    i = 0;
-    for (auto var : variables)
+    else
     {
-        //   if (objective_function.cost_value.find(var.name) != objective_function.cost_value.end())
-        //    revised_simplex.c[i] = objective_function.cost_value[var.name];
-        if (var.is_artificial == true)
-        {
-            revised_simplex.c[i] = -1;
-        }
-        else
-        {
-            revised_simplex.c[i] = 0;
-        }
-        i++;
-    }
-
-    i = 0;
-    for (auto constr : constraints)
-    {
-        int j = 0;
-        for (auto var : variables)
-        {
-            if (constr.column_value.find(var.name) != constr.column_value.end())
-            {
-                revised_simplex.A(i, j) = constr.column_value[var.name];
-            }
-            else
-            {
-                revised_simplex.A(i, j) = 0;
-            }
-
-            j++;
-        }
-        i++;
-    }
-
-    i = 0;
-    for (auto constr : constraints)
-    {
-        revised_simplex.b[i] = constr.main_rhs_value;
-        i++;
-    }
-
-    i = 0;
-    for (auto v : variables)
-    {
-        if (v.is_artificial == true || v.initial_basic == true)
-            revised_simplex.basic_variables.push_back(true);
-        else
-            revised_simplex.basic_variables.push_back(false);
-        i++;
-    }
-
-    i = 0;
-    for(int j = 0; j < revised_simplex.basic_variables.size(); j++)
-    {
-        if(revised_simplex.basic_variables[j]==false)
-            continue;
         
-        revised_simplex.B.col(i) = revised_simplex.A.col(j);
-        i++;
-    }
 
-    revised_simplex.B_inv = revised_simplex.B.inverse();
+        revised_simplex.c = Vec(variables.size());
+        revised_simplex.A = Mat(constraints.size(), variables.size());
+        revised_simplex.b = Vec(constraints.size());
+        revised_simplex.B = Mat(constraints.size(), constraints.size());
+        revised_simplex.basic_variables = std::vector<bool>();
 
-    revised_simplex.Solve();
-
-
-    // PHASE 2
-
-    int non_artificial_variables = 0;
-
-    for (auto var : variables)
-    {
-        //   if (objective_function.cost_value.find(var.name) != objective_function.cost_value.end())
-        //    revised_simplex.c[i] = objective_function.cost_value[var.name];
-        if (var.is_artificial == false)
-            non_artificial_variables++;
-    }
-
-    {
-        Mat new_A(revised_simplex.A.rows(), non_artificial_variables);
-
-        i = 0;
-        for (int j = 0; j < revised_simplex.A.cols(); j++)
-        {
-            if ((variables.begin() + j)->is_artificial == false)
-            {
-                new_A.col(i) = revised_simplex.A.col(j);
-                i++;
-            }
-        }
-
-        revised_simplex.A = new_A;
-
-        revised_simplex.c = Vec(new_A.cols());
-
-        i = 0;
+        int i = 0;
         for (auto var : variables)
         {
             //   if (objective_function.cost_value.find(var.name) != objective_function.cost_value.end())
             //    revised_simplex.c[i] = objective_function.cost_value[var.name];
             if (var.is_artificial == true)
             {
-                continue;
+                revised_simplex.c[i] = -1;
             }
             else
             {
-                revised_simplex.c[i] = objective_function.cost_value[var.name];
-                i++;
+                revised_simplex.c[i] = 0;
             }
+            i++;
         }
-    }
 
-
-    i = 0;
-    for (i = 0; i < revised_simplex.basic_variables.size(); i++)
-    {
-        (variables.begin() + i)->initial_basic = revised_simplex.basic_variables[i];
-    }
-
-    revised_simplex.basic_variables.clear();
-
-    i = 0;
-    for (auto v : variables)
-    {
-        if (v.is_artificial == true)
-            continue;
-        else
+        i = 0;
+        for (auto constr : constraints)
         {
-            if (v.initial_basic == true)
+            int j = 0;
+            for (auto var : variables)
             {
+                if (constr.column_value.find(var.name) != constr.column_value.end())
+                {
+                    revised_simplex.A(i, j) = constr.column_value[var.name];
+                }
+                else
+                {
+                    revised_simplex.A(i, j) = 0;
+                }
+
+                j++;
+            }
+            i++;
+        }
+
+        i = 0;
+        for (auto constr : constraints)
+        {
+            revised_simplex.b[i] = constr.main_rhs_value;
+            i++;
+        }
+
+        i = 0;
+        for (auto v : variables)
+        {
+            if (v.is_artificial == true || v.initial_basic == true)
                 revised_simplex.basic_variables.push_back(true);
-                i++;
-            }
             else
-            {
                 revised_simplex.basic_variables.push_back(false);
-                i++;
-            }
+            i++;
         }
-    }
 
-    i = 0;
-    for (int j = 0; j < revised_simplex.basic_variables.size(); j++)
-    {
-        if(revised_simplex.basic_variables[j] == true)
+        i = 0;
+        for(int j = 0; j < revised_simplex.basic_variables.size(); j++)
         {
+            if(revised_simplex.basic_variables[j]==false)
+                continue;
+            
             revised_simplex.B.col(i) = revised_simplex.A.col(j);
             i++;
         }
+
+        revised_simplex.B_inv = revised_simplex.B.inverse();
+
+        revised_simplex.Solve();
+
+
+        // PHASE 2
+
+        int non_artificial_variables = 0;
+
+        for (auto var : variables)
+        {
+            //   if (objective_function.cost_value.find(var.name) != objective_function.cost_value.end())
+            //    revised_simplex.c[i] = objective_function.cost_value[var.name];
+            if (var.is_artificial == false)
+                non_artificial_variables++;
+        }
+
+        {
+            Mat new_A(revised_simplex.A.rows(), non_artificial_variables);
+
+            i = 0;
+            for (int j = 0; j < revised_simplex.A.cols(); j++)
+            {
+                if ((variables.begin() + j)->is_artificial == false)
+                {
+                    new_A.col(i) = revised_simplex.A.col(j);
+                    i++;
+                }
+            }
+
+            revised_simplex.A = new_A;
+
+            revised_simplex.c = Vec(new_A.cols());
+
+            i = 0;
+            for (auto var : variables)
+            {
+                //   if (objective_function.cost_value.find(var.name) != objective_function.cost_value.end())
+                //    revised_simplex.c[i] = objective_function.cost_value[var.name];
+                if (var.is_artificial == true)
+                {
+                    continue;
+                }
+                else
+                {
+                    revised_simplex.c[i] = objective_function.cost_value[var.name];
+                    i++;
+                }
+            }
+        }
+
+
+        i = 0;
+        for (i = 0; i < revised_simplex.basic_variables.size(); i++)
+        {
+            (variables.begin() + i)->initial_basic = revised_simplex.basic_variables[i];
+        }
+
+        revised_simplex.basic_variables.clear();
+
+        i = 0;
+        for (auto v : variables)
+        {
+            if (v.is_artificial == true)
+                continue;
+            else
+            {
+                if (v.initial_basic == true)
+                {
+                    revised_simplex.basic_variables.push_back(true);
+                    i++;
+                }
+                else
+                {
+                    revised_simplex.basic_variables.push_back(false);
+                    i++;
+                }
+            }
+        }
+
+        i = 0;
+        for (int j = 0; j < revised_simplex.basic_variables.size(); j++)
+        {
+            if(revised_simplex.basic_variables[j] == true)
+            {
+                revised_simplex.B.col(i) = revised_simplex.A.col(j);
+                i++;
+            }
+        }
+
+        
+
+        revised_simplex.Solve();
+
     }
-
-    
-
-    revised_simplex.Solve();
 }
 
 #endif

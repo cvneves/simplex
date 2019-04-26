@@ -134,7 +134,6 @@ void RevisedSimplex::Solve()
 
     while (true)
     {
-
         last_basic_variables = basic_variables;
 
         for (int j = 0, i = 0; j < basic_variables.size(); j++)
