@@ -22,5 +22,6 @@ void DeleteSimplex(Simplex *simplex);
 int SolvePricing(Simplex *s);
 void ComputeDirection(Simplex *s);
 int ComputeNewBasis(Simplex *s);
+void SolveLinearProblem(Data *data);
 
 #endif
