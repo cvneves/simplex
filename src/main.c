@@ -31,6 +31,7 @@ int main(int argc, char **argv)
     }
 
     ComputeReducedCosts(s);
+    SolvePricing(s);
 
     DeleteSimplex(s);
 

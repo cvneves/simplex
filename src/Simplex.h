@@ -18,5 +18,6 @@ void InitializeSimplex(Simplex *simplex, Data *data);
 void DeleteSimplex(Simplex *simplex);
 
 void ComputeReducedCosts(Simplex *s);
+void SolvePricing(Simplex *s);
 
 #endif

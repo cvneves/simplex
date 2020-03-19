@@ -52,7 +52,7 @@ void ComputeReducedCosts(Simplex *s)
     }
 
     printf("\n");
-    for(int i = 0; i < s->data->m ;i++)
+    for (int i = 0; i < s->data->m; i++)
     {
         printf("%g ", s->p[i]);
     }
@@ -60,7 +60,7 @@ void ComputeReducedCosts(Simplex *s)
 
     for (int j = 0; j < s->data->n; j++)
     {
-        for(int k = 0; k < s->data->m; k++)
+        for (int k = 0; k < s->data->m; k++)
         {
             s->c_bar[j] -= s->p[k] * s->data->A[k][j];
         }
@@ -72,4 +72,31 @@ void ComputeReducedCosts(Simplex *s)
         printf("%g ", s->c_bar[i]);
     }
     printf("\n");
+}
+
+void SolvePricing(Simplex *s)
+{
+    // Find negative reduced cost
+    int jth = 0;
+    for (int i = 0; i < s->data->n; i++)
+    {
+        if (s->c_bar[i] < -EPSILON)
+        {
+            jth = i;
+        }
+    }
+
+    for (int i = 0; i < s->data->m; i++)
+    {
+        s->u[i] = 0;
+
+        for (int j = 0; j < s->data->m; j++)
+        {
+            s->u[i] += s->B_inv[i][j] * s->data->A[j][jth];
+        }
+        printf("%g ", s->u[i]);
+    }
+
+    printf("\n");
+
 }
