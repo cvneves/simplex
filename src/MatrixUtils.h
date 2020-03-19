@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 #define EPSILON 0.0001
+#define INFINITY 1e6
 typedef float t_double;
 
 typedef struct Matrix

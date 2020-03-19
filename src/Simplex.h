@@ -9,15 +9,18 @@ typedef struct Simplex
     Data *data;
 
     t_double *c_bar, *x, *u, *p;
-    int *basic_cols;
+    int *basic_cols, *non_basic_cols;
     t_double **B_inv;
+    int pivot_col_index, pivot_row_index;
+    t_double theta;
 
 } Simplex;
 
 void InitializeSimplex(Simplex *simplex, Data *data);
 void DeleteSimplex(Simplex *simplex);
 
-void ComputeReducedCosts(Simplex *s);
-void SolvePricing(Simplex *s);
+int SolvePricing(Simplex *s);
+void ComputeDirection(Simplex *s);
+int ComputeNewBasis(Simplex *s);
 
 #endif
