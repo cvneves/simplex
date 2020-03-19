@@ -2,24 +2,39 @@
 #include <stdio.h>
 #include <stddef.h>
 #include "MatrixUtils.h"
+#include "Simplex.h"
+#include "Data.h"
 
-int main()
+int main(int argc, char **argv)
 {
-    Matrix *A = (Matrix *)malloc(sizeof(Matrix));
-    InitializeMatrix(A, 2, 2);
-    t_double a[2][2] = {{4, 3}, {6, 3}};
+    Data *data;
+    ReadData1(&data, argv[1]);
+    PrintData(data);
 
-    for(int i = 0; i < A->rows; i++)
+    Simplex *s = malloc(sizeof(Simplex));
+    InitializeSimplex(s, data);
+
+    //
     {
-        for(int j = 0; j < A->rows; j++)
+        int bcols[] = {0, 2, 6};
+        t_double B[3][3] = {{0.5, -0.5, 0}, {-0.5, 1.5, 0}, {-0.5, -2.5, 1}};
+        for (int i = 0; i < data->m; i++)
         {
-            A->data[i][j] = a[i][j];
+            for (int j = 0; j < data->m; j++)
+            {
+                // s->B_inv[i][j] = data->A[i][j + data->n - data->m];
+                s->B_inv[i][j] = B[i][j];
+            }
+            // s->basic_cols[i] = i + data->n - data->m;
+            s->basic_cols[i] = bcols[i];
         }
     }
 
-    LUDecomposition(A);
+    ComputeReducedCosts(s);
 
-    DeleteMatrix(A);
+    DeleteSimplex(s);
+
+    DeleteData(data);
 
     exit(0);
 }
