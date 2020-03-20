@@ -9,7 +9,7 @@ int main(int argc, char **argv)
 {
     Data *data;
     ReadData1(&data, argv[1]);
-    // PrintData(data);
+    PrintData(data);
 
     SolveLinearProblem(data);
 

@@ -41,6 +41,12 @@ void DeleteSimplex(Simplex *simplex)
 
 int SolvePricing(Simplex *s)
 {
+    // for (int i = 0; i < s->data->n; i++)
+    // {
+    //     printf("%g ", s->x[i]);
+    // }
+    // printf("\n");
+
     /* Compute p' */
     for (int j = 0; j < s->data->m; j++)
     {
@@ -135,10 +141,10 @@ int ComputeNewBasis(Simplex *s)
     }
     s->x[s->non_basic_cols[s->pivot_col_index]] = s->theta;
 
-    for (int i = 0; i < s->data->n; i++)
-    {
-        // printf("%g ", s->x[i]);
-    }
+    // for (int i = 0; i < s->data->n; i++)
+    // {
+    //     printf("%g ", s->x[i]);
+    // }
     // printf("\n");
 
     // printf("%d %d\n", s->non_basic_cols[s->pivot_col_index], s->basic_cols[s->pivot_row_index]);
@@ -147,7 +153,7 @@ int ComputeNewBasis(Simplex *s)
     s->non_basic_cols[s->pivot_col_index] = s->basic_cols[s->pivot_row_index];
     s->basic_cols[s->pivot_row_index] = temp;
 
-    // for(int i = 0; i < s->data->m ; i++)
+    // for (int i = 0; i < s->data->m; i++)
     // {
     //     printf("%d ", s->basic_cols[i]);
     // }
@@ -163,24 +169,25 @@ int ComputeNewBasis(Simplex *s)
                 s->B_inv[i][j] -= row_coeff * s->B_inv[s->pivot_row_index][j];
             }
         }
-        else
-        {
-            for (int j = 0; j < s->data->m; j++)
-            {
-                s->B_inv[i][j] /= s->u[s->pivot_row_index];
-            }
-        }
     }
 
-    printf("\n");
-    for (int i = 0; i < s->data->m; i++)
+    for (int j = 0; j < s->data->m; j++)
     {
-        for (int j = 0; j < s->data->m; j++)
-        {
-            printf("%g ", s->B_inv[i][j]);
-        }
-        printf("\n");
+        s->B_inv[s->pivot_row_index][j] /= s->u[s->pivot_row_index];
     }
+
+    // printf("%d\n", s->non_basic_cols[s->pivot_col_index]);
+    // printf("%d\n", s->basic_cols[s->pivot_row_index]);
+
+    // printf("\n");
+    // for (int i = 0; i < s->data->m; i++)
+    // {
+    //     for (int j = 0; j < s->data->m; j++)
+    //     {
+    //         printf("%g ", s->B_inv[i][j]);
+    //     }
+    //     printf("\n");
+    // }
 }
 
 void SolveLinearProblem(Data *data)
@@ -192,9 +199,12 @@ void SolveLinearProblem(Data *data)
         // int bcols[] = {0, 2, 6};
         // int nbcols[] = {1, 3, 4, 5};
         // t_double B[3][3] = {{0.5, -0.5, 0}, {-0.5, 1.5, 0}, {-0.5, -2.5, 1}};
-        int bcols[] = {4,5,6};
-        int nbcols[] = {0,1,2,3};
-        t_double B[3][3] = {{1,0,0}, {0,1,0}, {0,0,1}};
+        // int bcols[] = {4, 5, 6};
+        // int nbcols[] = {0, 1, 2, 3};
+        // t_double B[3][3] = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
+        int bcols[] = {3, 4};
+        int nbcols[] = {0, 1, 2};
+        t_double B[2][2] = {{1, 0}, {0, 1}};
 
         for (int i = 0; i < data->n; i++)
         {
@@ -216,14 +226,15 @@ void SolveLinearProblem(Data *data)
             s->non_basic_cols[i] = nbcols[i];
         }
 
-        for (int i = 0; i < data->n; i++)
-        {
-            // printf("%g ", s->x[i]);
-        }
+        // for (int i = 0; i < data->n; i++)
+        // {
+        //     printf("%g ", s->x[i]);
+        // }
 
         // printf("\n");
     }
 
+    int k = 1;
     while (1)
     {
         if (SolvePricing(s) == -1)
